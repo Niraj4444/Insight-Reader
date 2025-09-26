@@ -36,7 +36,7 @@ function Header() {
         {activeTab === "Books" && (
           <div id="Books" className="tab-content" style={{ display: "block" }}>
             {/* ✅ Updated heading + text */}
-            <h3 className="section-title">Discover Your Next Read</h3>
+            <h3 className="section-title">Search Your Next Read</h3>
             <p className="section-subtitle">
               Search our entire library by <strong>title</strong>, <strong>author</strong>, 
               <strong> description</strong> or <strong>category</strong>.
