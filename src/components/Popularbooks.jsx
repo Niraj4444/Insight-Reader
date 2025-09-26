@@ -5,7 +5,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { addBookmark } from "../services/bookmarkService";
-import CategoryFilter from "./CategoryFilter";  // ✅ import filter
+import CategoryFilter from "./CategoryFilter";
 
 const fallbackImage = "/images/default-book.jpg";
 
@@ -22,6 +22,8 @@ function Popularbooks() {
         const querySnapshot = await getDocs(booksCollectionRef);
         const booksList = querySnapshot.docs.map((doc) => ({
           id: doc.id,
+          popular: false, // default value in case missing
+          category: "Uncategorized", // default category
           ...doc.data(),
         }));
         setBooks(booksList);
@@ -57,13 +59,14 @@ function Popularbooks() {
     return <div className="section">Loading books...</div>;
   }
 
-  // ✅ filter books by selected category
-  const filteredBooks =
-    selectedCategory === "All"
-      ? books
-      : books.filter((book) => book.category === selectedCategory);
+  // ✅ Filter only popular books and by selected category
+  const filteredBooks = books.filter(
+    (book) =>
+      book.popular &&
+      (selectedCategory === "All" || book.category === selectedCategory)
+  );
 
-  // ✅ extract unique categories
+  // ✅ Extract unique categories
   const categories = ["All", ...new Set(books.map((b) => b.category || "Uncategorized"))];
 
   return (
@@ -73,14 +76,12 @@ function Popularbooks() {
         <p>Explore all the books you can think of.</p>
       </div>
 
-      {/* ✅ use reusable filter component */}
       <CategoryFilter
         selected={selectedCategory}
         categories={categories}
         onChange={setSelectedCategory}
       />
 
-      {/* ✅ book grid */}
       <div className="grid">
         {filteredBooks.map((book) => (
           <div className="grid-half grid-column" key={book.id}>
