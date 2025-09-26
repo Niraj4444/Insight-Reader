@@ -35,13 +35,18 @@ function Header() {
 
         {activeTab === "Books" && (
           <div id="Books" className="tab-content" style={{ display: "block" }}>
-            <h3>Search Books</h3>
-            <p>Find your next great read.</p>
+            {/* ✅ Updated heading + text */}
+            <h3 className="section-title">Discover Your Next Read</h3>
+            <p className="section-subtitle">
+              Search our entire library by <strong>title</strong>, <strong>author</strong>, 
+              <strong> description</strong> or <strong>category</strong>.
+            </p>
+
             <form onSubmit={handleSearch}>
               <input
                 className="form-input"
                 type="text"
-                placeholder="e.g., The Lord of the Rings"
+                placeholder="e.g., The World of Ice & Fire or George R.R. Martin"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
               />
