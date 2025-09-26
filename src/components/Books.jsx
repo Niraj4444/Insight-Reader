@@ -1,16 +1,18 @@
 // src/components/Books.jsx
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";   // ✅ import Link
+import { Link } from "react-router-dom";
 import { db } from "../firebase";
 import { collection, getDocs } from "firebase/firestore";
 import { useAuth } from "../context/AuthContext";
 import { addBookmark } from "../services/bookmarkService";
+import CategoryFilter from "./CategoryFilter"; // ✅ import CategoryFilter
 
 const fallbackImage = "/images/default-book.jpg";
 
 function Books({ searchQuery }) {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState("All"); // ✅ category state
   const { currentUser } = useAuth();
 
   useEffect(() => {
@@ -20,6 +22,7 @@ function Books({ searchQuery }) {
         const querySnapshot = await getDocs(booksCollectionRef);
         const booksList = querySnapshot.docs.map((doc) => ({
           id: doc.id,
+          category: "Uncategorized", // default
           ...doc.data(),
         }));
         setBooks(booksList);
@@ -56,11 +59,21 @@ function Books({ searchQuery }) {
     return <div className="section">Loading books...</div>;
   }
 
-  const filteredBooks = searchQuery
+  // ✅ Filter by search query
+  let filteredBooks = searchQuery
     ? books.filter((book) =>
         book.title.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : books;
+
+  // ✅ Filter by selected category
+  filteredBooks =
+    selectedCategory === "All"
+      ? filteredBooks
+      : filteredBooks.filter((book) => book.category === selectedCategory);
+
+  // ✅ Extract unique categories
+  const categories = ["All", ...new Set(books.map((b) => b.category || "Uncategorized"))];
 
   return (
     <>
@@ -69,12 +82,18 @@ function Books({ searchQuery }) {
         <h6>From enjoyable stories to serious learning materials.</h6>
       </div>
 
+      {/* ✅ Category filter */}
+      <CategoryFilter
+        selected={selectedCategory}
+        categories={categories}
+        onChange={setSelectedCategory}
+      />
+
       <div className="grid">
         {filteredBooks.length > 0 ? (
           filteredBooks.map((book) => (
             <div className="grid-half grid-column" key={book.id}>
               <div className="card">
-                {/* ✅ Wrap in Link to BookReaderPage */}
                 <Link to={`/read/${book.id}`} className="book-card-link">
                   <div className="book-card">
                     <img
@@ -85,9 +104,7 @@ function Books({ searchQuery }) {
                     <span className="position-absolute-bottom-left destination-name">
                       {book.title}
                       <br />
-                      <small className="category">
-                        {book.category || "Uncategorized"}
-                      </small>
+                      <small className="category">{book.category}</small>
                     </span>
                   </div>
                 </Link>
