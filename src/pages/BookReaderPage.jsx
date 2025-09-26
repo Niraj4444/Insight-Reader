@@ -1,20 +1,22 @@
 // src/pages/BookReaderPage.jsx
 
-import React, { useState, useEffect } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react"; // ✅ THIS LINE IS NOW FIXED
+import { useParams } from "react-router-dom";
 import { db } from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
 
 function BookReaderPage() {
   const { bookId } = useParams();
-  const location = useLocation();
-  const bookFromState = location.state?.book;
-
-  const [book, setBook] = useState(bookFromState || null);
-  const [loading, setLoading] = useState(!bookFromState);
+  const [book, setBook] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchBook = async () => {
+      if (!bookId) {
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
       try {
         const ref = doc(db, "books", bookId);
         const snap = await getDoc(ref);
@@ -23,6 +25,7 @@ function BookReaderPage() {
           setBook({ id: snap.id, ...snap.data() });
         } else {
           console.error("No such book in Firestore!");
+          setBook(null);
         }
       } catch (err) {
         console.error("Error fetching book:", err);
@@ -31,22 +34,28 @@ function BookReaderPage() {
       }
     };
 
-    if (!bookFromState && bookId) {
-      fetchBook();
-    }
-  }, [bookId, bookFromState]);
+    fetchBook();
+  }, [bookId]);
 
   if (loading) return <div>Loading book...</div>;
   if (!book) return <div>Book not found.</div>;
 
-  // Fix Google Drive "view" link → turn into "preview"
+  // --- START OF THE URL FIX ---
   let previewUrl = book.bookFileURL;
+  let downloadUrl = book.bookFileURL;
+
   if (book.bookFileURL?.includes("drive.google.com")) {
     const match = book.bookFileURL.match(/\/d\/(.*?)(\/|$|\?)/);
+
     if (match && match[1]) {
-      previewUrl = `https://drive.google.com/file/d/${match[1]}/preview`;
+      const fileId = match[1];
+      // Create the correct URL for embedding in the iframe
+      previewUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+      // Create the correct URL for a direct download
+      downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
     }
   }
+  // --- END OF THE URL FIX ---
 
   return (
     <div
@@ -59,7 +68,7 @@ function BookReaderPage() {
     >
       <h2>Reading: {book.title}</h2>
 
-      {/* PDF Preview */}
+      {/* PDF Preview using the correct previewUrl */}
       <div style={{ flex: 1, marginTop: "20px" }}>
         <iframe
           src={previewUrl}
@@ -71,11 +80,11 @@ function BookReaderPage() {
         />
       </div>
 
-      {/* Download button */}
+      {/* Download button using the new downloadUrl */}
       <div className="flex flex-col items-center mt-6">
         <h3 className="text-xl font-semibold mb-3">Download Book</h3>
         <a
-          href={book.bookFileURL}
+          href={downloadUrl}
           download={book.title || "book.pdf"}
           className="px-10 py-4 bg-blue-600 text-white text-lg font-bold rounded-xl shadow-lg hover:bg-blue-700 transition"
         >

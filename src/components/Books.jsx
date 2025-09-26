@@ -1,11 +1,11 @@
-// src/components/Books.jsx
 import React from "react";
 import { useAuth } from "../context/AuthContext";
 import { addBookmark } from "../services/bookmarkService";
 
-const localBooksData = [
+// ✅ Export localBooksData so SearchResultsPage can import
+export const localBooksData = [
   {
-    id: "house-dragon", // add unique IDs for bookmarks
+    id: "house-dragon",
     image: "/images/Ice&f.jpg",
     alt: "House of the Dragon",
     title: "House of the Dragon Bundle",
@@ -57,7 +57,7 @@ function Books({ searchQuery }) {
 
       <div className="grid">
         {filteredBooks.length > 0 ? (
-          filteredBooks.map((book, index) => (
+          filteredBooks.map((book) => (
             <div className="grid-half grid-column" key={book.id}>
               <div className="card">
                 <img src={book.image} alt={book.alt} />

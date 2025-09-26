@@ -1,17 +1,11 @@
-// src/pages/SearchResultsPage.jsx
 import React, { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { db } from "../firebase";
 import { collection, getDocs } from "firebase/firestore";
 
-// Static demo books (local only)
-const staticBooks = [
-  { title: "House of the Dragon", image: "/images/Ice&f.jpg" },
-  { title: "Fluent Python", image: "/images/FluentPy.jpg" },
-  { title: "The Lord of the Rings", image: "/images/rings.jpg" },
-];
+// ✅ Import localBooksData from Books.jsx
+import { localBooksData } from "../components/Books";
 
-// Default fallback image (put one in public/images/default-book.jpg)
 const fallbackImage = "/images/default-book.jpg";
 
 function useQuery() {
@@ -23,17 +17,15 @@ function SearchResultsPage() {
   const [firestoreBooks, setFirestoreBooks] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch books from Firestore
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const booksCollectionRef = collection(db, "books"); // 👈 check this name matches your Firestore
+        const booksCollectionRef = collection(db, "books");
         const snapshot = await getDocs(booksCollectionRef);
         const list = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
-        console.log("All Firestore books:", list); // 🔎 Debug
         setFirestoreBooks(list);
       } catch (error) {
         console.error("Error fetching books:", error);
@@ -44,21 +36,17 @@ function SearchResultsPage() {
     fetchBooks();
   }, []);
 
-  // Normalize search for case-insensitive matching
   const normalize = (str) => (str || "").toLowerCase().trim();
 
-  // Filter static + firestore books
-  const staticResults = staticBooks.filter((b) =>
-    normalize(b.title).includes(query)
-  );
-  const firestoreResults = firestoreBooks.filter((b) =>
-    normalize(b.title).includes(query)
-  );
+  // ✅ Merge both local + Firestore
+  const allBooks = [...localBooksData, ...firestoreBooks];
 
-  console.log("Query:", query);
-  console.log("Firestore matches:", firestoreResults); // 🔎 Debug
-
-  const allResults = [...staticResults, ...firestoreResults];
+  // ✅ Search in title, description, category, meta
+  const results = allBooks.filter((b) =>
+    [b.title, b.description, b.category, b.meta]
+      .map(normalize)
+      .some((field) => field.includes(query))
+  );
 
   if (loading) {
     return <div className="section">Loading search results...</div>;
@@ -67,11 +55,11 @@ function SearchResultsPage() {
   return (
     <div className="section">
       <h2>Search Results for "{query}"</h2>
-      {allResults.length > 0 ? (
+      {results.length > 0 ? (
         <div className="grid">
-          {allResults.map((book, i) =>
-            book.id ? (
-              // Firestore book → link to reader
+          {results.map((book, i) =>
+            book.id && !book.localOnly ? (
+              // Firestore PopularBooks
               <div className="grid-half grid-column" key={`fs-${book.id}`}>
                 <Link to={`/read/${book.id}`} className="book-card-link">
                   <div className="book-card">
@@ -87,8 +75,8 @@ function SearchResultsPage() {
                 </Link>
               </div>
             ) : (
-              // Static book → just show card
-              <div className="grid-half grid-column" key={`st-${i}`}>
+              // Local Books.jsx
+              <div className="grid-half grid-column" key={`st-${book.id || i}`}>
                 <div className="book-card">
                   <img
                     src={book.image || fallbackImage}
