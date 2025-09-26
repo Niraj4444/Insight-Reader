@@ -1,8 +1,11 @@
 // src/pages/BookmarkPage.jsx
 import React, { useEffect, useState } from "react";
-import "../Digitalbook.css"; 
+import "../Digitalbook.css";
 import { useAuth } from "../context/AuthContext";
 import { getBookmarks, removeBookmark } from "../services/bookmarkService";
+import { Link } from "react-router-dom";
+
+const fallbackImage = "/images/default-book.jpg";
 
 export default function BookmarkPage() {
   const { currentUser } = useAuth();
@@ -19,7 +22,7 @@ export default function BookmarkPage() {
 
   const handleRemove = async (bookId) => {
     await removeBookmark(currentUser.uid, bookId);
-    setBookmarks(bookmarks.filter(b => b.id !== bookId));
+    setBookmarks((prev) => prev.filter((b) => b.id !== bookId));
   };
 
   if (!currentUser) {
@@ -41,18 +44,29 @@ export default function BookmarkPage() {
           {bookmarks.map((book) => (
             <div className="grid-half grid-column" key={book.id}>
               <div className="card">
-                {book.image && <img src={book.image} alt={book.title} />}
-                <div className="card-content">
-                  <h3>{book.title}</h3>
-                  <p className="card-meta">{book.meta}</p>
-                  <p>{book.description}</p>
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => handleRemove(book.id)}
-                  >
-                    Remove Bookmark
-                  </button>
-                </div>
+                {/* clickable card like PopularBooks */}
+                <Link to={`/read/${book.id}`} className="book-card-link">
+                  <div className="book-card">
+                    <img
+                      src={book.image || fallbackImage}
+                      alt={book.title}
+                      onError={(e) => (e.target.src = fallbackImage)}
+                    />
+                    <span className="position-absolute-bottom-left destination-name">
+                      {book.title}
+                      <br />
+                      <small className="category">{book.category || book.meta}</small>
+                    </span>
+                  </div>
+                </Link>
+
+                {/* only remove button below card */}
+                <button
+                  className="btn btn-primary"
+                  onClick={() => handleRemove(book.id)}
+                >
+                  Remove Bookmark
+                </button>
               </div>
             </div>
           ))}
