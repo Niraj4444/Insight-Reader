@@ -40,7 +40,7 @@ function SearchResultsPage() {
 
   // ✅ Search directly in Firestore books
   const results = firestoreBooks.filter((b) =>
-    [b.title, b.description, b.category, b.meta]
+    [b.title, b.author, b.description, b.category, b.meta]
       .map(normalize)
       .some((field) => field.includes(query))
   );
