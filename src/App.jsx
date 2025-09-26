@@ -16,7 +16,7 @@ import UserProfilePage from "./pages/UserProfilePage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
 import BookReaderPage from "./pages/BookReaderPage";
-import SearchResultsPage from "./pages/SearchResultsPage";  // ✅ real search page
+import SearchResultsPage from "./pages/SearchResultsPage"; // ✅ search page
 
 // Homepage layout
 function HomePage() {
@@ -24,8 +24,11 @@ function HomePage() {
     <>
       <Header />
       <div className="main-content">
-        <Books searchQuery="" />
+        {/* ✅ Popular books first */}
         <Popularbooks />
+
+        {/* ✅ Then all books */}
+        <Books searchQuery="" />
       </div>
     </>
   );
@@ -50,7 +53,7 @@ export default function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<HomePage />} />
-            <Route path="/search" element={<SearchResultsPage />} /> {/* ✅ fixed */}
+            <Route path="/search" element={<SearchResultsPage />} /> {/* ✅ search */}
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
