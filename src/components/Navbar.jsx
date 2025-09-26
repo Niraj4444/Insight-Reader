@@ -22,7 +22,7 @@ export default function Navbar() {
     <nav className="navbar">
       {/* Brand logo */}
       <Link to="/" className="brand-logo">
-        Digital Library
+        Insight Reader
       </Link>
 
       <div className="navbar-actions">

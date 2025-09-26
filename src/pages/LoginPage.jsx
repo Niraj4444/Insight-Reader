@@ -1,7 +1,7 @@
 // src/pages/LoginPage.jsx
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../firebase'; // Firebase untouched
 import './LoginPage.css'; // Your provided styles
 
@@ -10,12 +10,14 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
 
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
+    setMessage('');
 
     if (!email || !password) {
       setError('Please enter both email and password.');
@@ -28,6 +30,25 @@ export default function LoginPage() {
     } catch (err) {
       setError(err.message);
       console.error('Login failed:', err);
+    }
+  };
+
+  // Forgot password handler
+  const handleForgotPassword = async () => {
+    setError('');
+    setMessage('');
+
+    if (!email) {
+      setError('Please enter your email first.');
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setMessage('Password reset email sent! Check your inbox.');
+    } catch (err) {
+      setError(err.message);
+      console.error('Password reset failed:', err);
     }
   };
 
@@ -61,14 +82,22 @@ export default function LoginPage() {
           </div>
 
           {error && <p style={{ color: 'red', marginBottom: '1rem' }}>{error}</p>}
+          {message && <p style={{ color: 'green', marginBottom: '1rem' }}>{message}</p>}
 
           <button type="submit" className="login-btn">
             Log In
           </button>
         </form>
 
+        {/* Forgot password link */}
+        <p className="forgot-password-link">
+          <button onClick={handleForgotPassword} className="link-button">
+            Forgot Password?
+          </button>
+        </p>
+
         <p className="signup-link">
-          Don't have an account yet?{' '}
+          Don&apos;t have an account yet?{' '}
           <Link to="/signup">Sign up</Link>
         </p>
       </div>

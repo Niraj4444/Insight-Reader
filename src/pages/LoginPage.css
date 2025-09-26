@@ -81,6 +81,29 @@
   background-color: #0056b3; /* Darker blue on hover */
 }
 
+/* The "Forgot Password?" link */
+.forgot-password-link {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.forgot-password-link .link-button {
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: bold;
+  padding: 0;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.forgot-password-link .link-button:hover {
+  text-decoration: underline;
+  color: #0056b3;
+}
+
 /* The "Don't have an account yet?" link */
 .signup-link {
   margin-top: 1.5rem;
