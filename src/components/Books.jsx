@@ -1,52 +1,66 @@
-import React from "react";
+// src/components/Books.jsx
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";   // ✅ import Link
+import { db } from "../firebase";
+import { collection, getDocs } from "firebase/firestore";
 import { useAuth } from "../context/AuthContext";
 import { addBookmark } from "../services/bookmarkService";
 
-// ✅ Export localBooksData so SearchResultsPage can import
-export const localBooksData = [
-  {
-    id: "house-dragon",
-    image: "/images/Ice&f.jpg",
-    alt: "House of the Dragon",
-    title: "House of the Dragon Bundle",
-    meta: "Free right now",
-    description: "Enjoy the books from the popular series.",
-  },
-  {
-    id: "fluent-python",
-    image: "/images/Py3.jpg",
-    alt: "Python Programming",
-    title: "Fluent Python",
-    meta: "Free for beginners",
-    description: "Learn from the best-of-the-best books.",
-  },
-  {
-    id: "lotr",
-    image: "/images/rings.jpg",
-    alt: "Lord of the Rings",
-    title: "The Lord of the Rings",
-    meta: "Classic Fantasy",
-    description: "Epic fantasy adventure by J.R.R. Tolkien.",
-  },
-];
+const fallbackImage = "/images/default-book.jpg";
 
 function Books({ searchQuery }) {
+  const [books, setBooks] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { currentUser } = useAuth();
+
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const booksCollectionRef = collection(db, "books");
+        const querySnapshot = await getDocs(booksCollectionRef);
+        const booksList = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setBooks(booksList);
+      } catch (error) {
+        console.error("Error fetching books: ", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBooks();
+  }, []);
 
   const handleBookmark = async (book) => {
     if (!currentUser) {
       alert("Please login to bookmark books.");
       return;
     }
-    await addBookmark(currentUser.uid, book);
+
+    const bookmarkData = {
+      id: book.id,
+      title: book.title,
+      image: book.coverImageURL || fallbackImage,
+      description: book.description || "No description available.",
+      meta: book.meta || "Book",
+      category: book.category || "Uncategorized",
+    };
+
+    await addBookmark(currentUser.uid, bookmarkData);
     alert(`${book.title} added to bookmarks!`);
   };
 
+  if (loading) {
+    return <div className="section">Loading books...</div>;
+  }
+
   const filteredBooks = searchQuery
-    ? localBooksData.filter((book) =>
+    ? books.filter((book) =>
         book.title.toLowerCase().includes(searchQuery.toLowerCase())
       )
-    : localBooksData;
+    : books;
 
   return (
     <>
@@ -60,21 +74,32 @@ function Books({ searchQuery }) {
           filteredBooks.map((book) => (
             <div className="grid-half grid-column" key={book.id}>
               <div className="card">
-                <img src={book.image} alt={book.alt} />
-                <div className="card-content">
-                  <h3>{book.title}</h3>
-                  <p className="card-meta">{book.meta}</p>
-                  <p>{book.description}</p>
-                  <button className="btn btn-primary">View Book Details</button>
-                  {currentUser && (
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => handleBookmark(book)}
-                    >
-                      Bookmark
-                    </button>
-                  )}
-                </div>
+                {/* ✅ Wrap in Link to BookReaderPage */}
+                <Link to={`/read/${book.id}`} className="book-card-link">
+                  <div className="book-card">
+                    <img
+                      src={book.coverImageURL || fallbackImage}
+                      alt={book.title}
+                      onError={(e) => (e.target.src = fallbackImage)}
+                    />
+                    <span className="position-absolute-bottom-left destination-name">
+                      {book.title}
+                      <br />
+                      <small className="category">
+                        {book.category || "Uncategorized"}
+                      </small>
+                    </span>
+                  </div>
+                </Link>
+
+                {currentUser && (
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => handleBookmark(book)}
+                  >
+                    Bookmark
+                  </button>
+                )}
               </div>
             </div>
           ))
