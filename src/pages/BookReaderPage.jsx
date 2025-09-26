@@ -68,6 +68,12 @@ function BookReaderPage() {
     >
       <h2>Reading: {book.title}</h2>
 
+      {book.description && (
+        <p style={{ marginTop: "8px", color: "#666", fontSize: "1rem" }}>
+          {book.description}
+        </p>
+      )}
+
       {/* PDF Preview using the correct previewUrl */}
       <div style={{ flex: 1, marginTop: "20px" }}>
         <iframe
