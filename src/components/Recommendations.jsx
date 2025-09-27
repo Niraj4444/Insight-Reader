@@ -2,9 +2,15 @@
 import React, { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
+import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { addBookmark } from "../services/bookmarkService";
+
+const fallbackImage = "/images/default-book.jpg";
 
 export default function Recommendations({ currentBook }) {
   const [recommended, setRecommended] = useState([]);
+  const { currentUser } = useAuth();
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -22,19 +28,19 @@ export default function Recommendations({ currentBook }) {
           if (
             b.author?.toLowerCase() === currentBook.author?.toLowerCase()
           ) {
-            score += 2; // strong weight
+            score += 2;
           }
 
           // ✅ Priority 2: same category
           if (
             b.category?.toLowerCase() === currentBook.category?.toLowerCase()
           ) {
-            score += 1; // medium weight
+            score += 1;
           }
 
           return { ...b, score };
         })
-        .filter((b) => b.score > 0); // only keep books with similarity
+        .filter((b) => b.score > 0);
 
       sims.sort((a, b) => b.score - a.score);
       setRecommended(sims.slice(0, 3));
@@ -43,35 +49,62 @@ export default function Recommendations({ currentBook }) {
     fetchBooks();
   }, [currentBook]);
 
+  const handleBookmark = async (book) => {
+    if (!currentUser) {
+      alert("Please login to bookmark books.");
+      return;
+    }
+
+    const bookmarkData = {
+      id: book.id,
+      title: book.title,
+      image: book.coverImageURL || fallbackImage,
+      description: book.description || "No description available.",
+      meta: book.meta || "Book",
+      category: book.category || "Uncategorized",
+    };
+
+    await addBookmark(currentUser.uid, bookmarkData);
+    alert(`${book.title} added to bookmarks!`);
+  };
+
   if (!recommended.length) return null;
 
   return (
     <div style={{ marginTop: "40px" }}>
       <h2 className="text-2xl font-bold mb-4">Recommended Books</h2>
-      <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
+      <div className="grid">
         {recommended.map((book) => (
-          <div
-            key={book.id}
-            style={{
-              border: "1px solid #ddd",
-              borderRadius: "10px",
-              padding: "10px",
-              width: "200px",
-              textAlign: "center",
-            }}
-          >
-            <img
-              src={book.coverImageURL}
-              alt={book.title}
-              style={{
-                width: "100%",
-                height: "250px",
-                objectFit: "cover",
-                borderRadius: "8px",
-              }}
-            />
-            <p className="font-semibold mt-2">{book.title}</p>
-            <p className="text-sm text-gray-600">{book.author}</p>
+          <div className="grid-half grid-column" key={book.id}>
+            <div className="card">
+              {/* clickable card like PopularBooks */}
+              <Link to={`/read/${book.id}`} className="book-card-link">
+                <div className="book-card">
+                  <img
+                    src={book.coverImageURL || fallbackImage}
+                    alt={book.title}
+                    onError={(e) => (e.target.src = fallbackImage)}
+                  />
+                  <span className="position-absolute-bottom-left destination-name">
+                    {book.title}
+                    <br />
+                    <small className="category">
+                      {book.category || "Uncategorized"}
+                    </small>
+                  </span>
+                </div>
+              </Link>
+
+              {/* bookmark button below card */}
+              {currentUser && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => handleBookmark(book)}
+                >
+                  Bookmark
+                </button>
+              )}
+            </div>
           </div>
         ))}
       </div>
