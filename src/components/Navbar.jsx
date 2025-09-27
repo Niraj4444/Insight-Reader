@@ -1,8 +1,7 @@
-// src/components/Navbar.jsx
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
-import { useAuth } from '../context/AuthContext.jsx'; // make sure path is correct
+import { useAuth } from '../context/AuthContext.jsx';
 import { auth } from '../firebase';
 
 export default function Navbar() {
@@ -20,7 +19,6 @@ export default function Navbar() {
 
   return (
     <nav className="navbar">
-      {/* Brand logo */}
       <Link to="/" className="brand-logo">
         Insight Reader
       </Link>
@@ -28,9 +26,11 @@ export default function Navbar() {
       <div className="navbar-actions">
         {currentUser ? (
           <>
-            {/* Logged-in links */}
             <Link to="/bookmark" className="nav-link">
               Bookmark
+            </Link>
+            <Link to="/notes" className="nav-link">
+              Notes
             </Link>
             <Link to="/user" className="nav-link">
               User
@@ -41,7 +41,6 @@ export default function Navbar() {
           </>
         ) : (
           <>
-            {/* Logged-out links */}
             <Link to="/contact" className="nav-link">
               Contact
             </Link>

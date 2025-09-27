@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import { db } from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
 import Recommendations from "../components/Recommendations";
+import NotesPanel from "../components/NotesPanel"; // ✅ import notes
 
 function BookReaderPage() {
   const { bookId } = useParams();
@@ -88,7 +89,7 @@ function BookReaderPage() {
         />
       </div>
 
-      {/* RIGHT: Download + Recommendations */}
+      {/* RIGHT: Download + Recommendations + Notes */}
       <div
         style={{
           flex: 1,
@@ -112,6 +113,9 @@ function BookReaderPage() {
 
         {/* Recommendations */}
         <Recommendations currentBook={book} />
+
+        {/* ✅ Companion Notes */}
+        <NotesPanel bookId={book.id} />
       </div>
     </div>
   );

@@ -17,6 +17,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
 import BookReaderPage from "./pages/BookReaderPage";
 import SearchResultsPage from "./pages/SearchResultsPage"; // ✅ search page
+import NotesPage from "./pages/NotesPage"; // ✅ NEW
 
 // Homepage layout
 function HomePage() {
@@ -65,6 +66,14 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <BookmarkPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/notes"
+              element={
+                <ProtectedRoute>
+                  <NotesPage />
                 </ProtectedRoute>
               }
             />
