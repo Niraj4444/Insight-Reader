@@ -1,6 +1,6 @@
 // src/pages/BookReaderPage.jsx
 
-import React, { useState, useEffect } from "react"; // ✅ THIS LINE IS NOW FIXED
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { db } from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
@@ -40,7 +40,7 @@ function BookReaderPage() {
   if (loading) return <div>Loading book...</div>;
   if (!book) return <div>Book not found.</div>;
 
-  // --- START OF THE URL FIX ---
+  // --- START: Google Drive URL Fix ---
   let previewUrl = book.bookFileURL;
   let downloadUrl = book.bookFileURL;
 
@@ -49,13 +49,13 @@ function BookReaderPage() {
 
     if (match && match[1]) {
       const fileId = match[1];
-      // Create the correct URL for embedding in the iframe
-      previewUrl = `https://drive.google.com/file/d/${fileId}/preview`;
-      // Create the correct URL for a direct download
+      // Force English numerals in the Google Drive viewer
+      previewUrl = `https://drive.google.com/file/d/${fileId}/preview?hl=en`;
+      // Direct download link
       downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
     }
   }
-  // --- END OF THE URL FIX ---
+  // --- END: Google Drive URL Fix ---
 
   return (
     <div
