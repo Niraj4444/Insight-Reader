@@ -1,9 +1,8 @@
-// src/components/NotesPanel.jsx
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { addNote, getNotes, updateNote, deleteNote } from "../services/noteService";
 
-function NotesPanel({ bookId }) {
+function NotesPanel({ bookId, bookTitle }) {
   const { currentUser } = useAuth();
   const [notes, setNotes] = useState([]);
   const [newNote, setNewNote] = useState("");
@@ -26,7 +25,8 @@ function NotesPanel({ bookId }) {
 
   const handleAdd = async () => {
     if (!newNote.trim()) return;
-    await addNote(currentUser.uid, bookId, newNote);
+    // ✅ Pass bookTitle so Firestore saves it
+    await addNote(currentUser.uid, bookId, newNote, bookTitle);
     setNewNote("");
     await refreshNotes();
   };
@@ -47,7 +47,7 @@ function NotesPanel({ bookId }) {
 
   return (
     <div className="bg-white shadow-lg rounded-xl p-4 flex flex-col h-full">
-      <h3 className="text-xl font-semibold mb-3">📝 My Notes</h3>
+      <h3 className="text-xl font-semibold mb-3">📝 My Notes for {bookTitle}</h3>
 
       {/* Search */}
       <input
@@ -60,7 +60,7 @@ function NotesPanel({ bookId }) {
 
       {/* Add new note */}
       <textarea
-        placeholder="Write your insight..."
+        placeholder={`Write your insight about "${bookTitle}"...`}
         className="w-full border p-2 rounded mb-2"
         value={newNote}
         onChange={(e) => setNewNote(e.target.value)}
@@ -75,7 +75,7 @@ function NotesPanel({ bookId }) {
       {/* Notes list */}
       <div className="mt-4 flex-1 overflow-y-auto">
         {filteredNotes.length === 0 ? (
-          <p className="text-gray-500">No notes yet.</p>
+          <p className="text-gray-500">No notes yet for this book.</p>
         ) : (
           filteredNotes.map((note) => (
             <div

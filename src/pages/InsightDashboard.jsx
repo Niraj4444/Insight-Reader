@@ -27,6 +27,7 @@ export default function InsightDashboard() {
 
   const handleAdd = async () => {
     if (newNote.trim()) {
+      // bookId = "general" if not tied to a specific book
       await addNote(currentUser.uid, "general", newNote);
       setNewNote("");
       await refreshNotes();
@@ -43,13 +44,15 @@ export default function InsightDashboard() {
     await refreshNotes();
   };
 
-  const filteredNotes = notes.filter((n) =>
-    n.content.toLowerCase().includes(search.toLowerCase())
+  // ✅ Search by content OR book title
+  const filteredNotes = notes.filter(
+    (n) =>
+      n.content.toLowerCase().includes(search.toLowerCase()) ||
+      (n.bookTitle && n.bookTitle.toLowerCase().includes(search.toLowerCase()))
   );
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
-      {/* 🔹 Updated title */}
       <h1 className="text-3xl font-bold mb-6">📖 Insight Dashboard</h1>
 
       {/* Add new insight */}
@@ -70,7 +73,7 @@ export default function InsightDashboard() {
       <div className="mt-6">
         <input
           type="text"
-          placeholder="Search insights..."
+          placeholder="Search by book title or insight text..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full border p-3 rounded"
@@ -81,12 +84,24 @@ export default function InsightDashboard() {
       <div className="mt-6">
         {filteredNotes.length > 0 ? (
           filteredNotes.map((note) => (
-            <NoteCard
-              key={note.id}
-              note={note}
-              onUpdate={handleUpdate}
-              onDelete={handleDelete}
-            />
+            <div key={note.id} className="mb-4">
+              {/* ✅ Show book title */}
+              <div className="text-sm text-gray-500 mb-1">
+                📖 {note.bookTitle || "Unknown Book"}
+              </div>
+
+              <NoteCard
+                note={note}
+                onUpdate={handleUpdate}
+                onDelete={handleDelete}
+              />
+
+              {/* ✅ Timestamp */}
+              <div className="text-xs text-gray-400 mt-1">
+                Added:{" "}
+                {note.createdAt?.toDate?.().toLocaleString?.() || "N/A"}
+              </div>
+            </div>
           ))
         ) : (
           <p className="text-gray-500">No insights yet.</p>

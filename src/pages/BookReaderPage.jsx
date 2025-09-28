@@ -115,7 +115,7 @@ function BookReaderPage() {
         <Recommendations currentBook={book} />
 
         {/* ✅ Companion Notes */}
-        <NotesPanel bookId={book.id} />
+        <NotesPanel bookId={bookId} bookTitle={book.title} />
       </div>
     </div>
   );
