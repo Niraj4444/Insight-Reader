@@ -8,6 +8,7 @@ import {
   deleteDoc,
   doc,
   serverTimestamp,
+  orderBy,   // ✅ import orderBy
 } from "firebase/firestore";
 
 /**
@@ -32,7 +33,12 @@ export const addNote = async (userId, bookId, content, bookTitle = "General") =>
  * @param {string} userId - current user UID
  */
 export const getNotes = async (userId) => {
-  const q = query(collection(db, "users", userId, "notes"));
+  // ✅ order by createdAt newest first
+  const q = query(
+    collection(db, "users", userId, "notes"),
+    orderBy("updatedAt", "desc")
+  );
+
   const snapshot = await getDocs(q);
   return snapshot.docs.map((docSnap) => ({
     id: docSnap.id,

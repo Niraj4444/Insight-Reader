@@ -1,4 +1,3 @@
-// src/components/NoteCard.jsx
 import React, { useState } from "react";
 
 export default function NoteCard({ note, onUpdate, onDelete }) {
@@ -13,22 +12,24 @@ export default function NoteCard({ note, onUpdate, onDelete }) {
   };
 
   return (
-    <div className="p-3 rounded-lg shadow mb-3 bg-white">
-      {/* 🔹 Book Title */}
-      <p className="font-semibold text-blue-700">{note.bookTitle}</p>
+    <div className="p-4 rounded-lg shadow bg-white mb-4">
+      {/* Book Title (with fallback for general notes) */}
+      <p className="font-semibold text-blue-700 mb-1">
+        📖 {note.bookTitle || "📝 General Note"}
+      </p>
 
       {isEditing ? (
         <textarea
           value={editedContent}
           onChange={(e) => setEditedContent(e.target.value)}
-          className="w-full border p-2 rounded"
+          className="w-full border p-2 rounded mb-2"
         />
       ) : (
-        <p className="mb-1">{note.content}</p>
+        <p className="mb-2">{note.content}</p>
       )}
 
-      {/* 🔹 Timestamps */}
-      <small className="text-gray-500 block">
+      {/* Timestamps */}
+      <small className="text-gray-500 block mb-2">
         Added:{" "}
         {note.createdAt?.seconds
           ? new Date(note.createdAt.seconds * 1000).toLocaleString()
@@ -37,8 +38,8 @@ export default function NoteCard({ note, onUpdate, onDelete }) {
           ` | Updated: ${new Date(note.updatedAt.seconds * 1000).toLocaleString()}`}
       </small>
 
-      {/* 🔹 Actions */}
-      <div className="flex gap-2 mt-2">
+      {/* Actions */}
+      <div className="flex gap-2">
         {isEditing ? (
           <button
             className="bg-green-500 text-white px-3 py-1 rounded"

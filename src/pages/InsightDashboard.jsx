@@ -6,7 +6,7 @@ import {
   updateNote,
   deleteNote,
 } from "../services/noteService";
-import NoteCard from "../components/NoteCard"; // ✅ reusable note component
+import NoteCard from "../components/NoteCard";
 
 export default function InsightDashboard() {
   const { currentUser } = useAuth();
@@ -84,24 +84,12 @@ export default function InsightDashboard() {
       <div className="mt-6">
         {filteredNotes.length > 0 ? (
           filteredNotes.map((note) => (
-            <div key={note.id} className="mb-4">
-              {/* ✅ Show book title */}
-              <div className="text-sm text-gray-500 mb-1">
-                📖 {note.bookTitle || "Unknown Book"}
-              </div>
-
-              <NoteCard
-                note={note}
-                onUpdate={handleUpdate}
-                onDelete={handleDelete}
-              />
-
-              {/* ✅ Timestamp */}
-              <div className="text-xs text-gray-400 mt-1">
-                Added:{" "}
-                {note.createdAt?.toDate?.().toLocaleString?.() || "N/A"}
-              </div>
-            </div>
+            <NoteCard
+              key={note.id}
+              note={note}
+              onUpdate={handleUpdate}
+              onDelete={handleDelete}
+            />
           ))
         ) : (
           <p className="text-gray-500">No insights yet.</p>

@@ -25,7 +25,7 @@ function NotesPanel({ bookId, bookTitle }) {
 
   const handleAdd = async () => {
     if (!newNote.trim()) return;
-    // ✅ Pass bookTitle so Firestore saves it
+    // ✅ Save with bookTitle
     await addNote(currentUser.uid, bookId, newNote, bookTitle);
     setNewNote("");
     await refreshNotes();
@@ -80,25 +80,33 @@ function NotesPanel({ bookId, bookTitle }) {
           filteredNotes.map((note) => (
             <div
               key={note.id}
-              className="p-2 mb-2 border rounded bg-gray-50 flex justify-between"
+              className="p-3 mb-3 border rounded bg-gray-50"
             >
-              <span>{note.content}</span>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => {
-                    const newContent = prompt("Edit your note:", note.content);
-                    if (newContent) handleUpdate(note.id, newContent);
-                  }}
-                  className="text-blue-600 hover:underline"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(note.id)}
-                  className="text-red-600 hover:underline"
-                >
-                  Delete
-                </button>
+              {/* Note content */}
+              <div className="flex justify-between items-start">
+                <span>{note.content}</span>
+                <div className="flex gap-2 text-sm">
+                  <button
+                    onClick={() => {
+                      const newContent = prompt("Edit your note:", note.content);
+                      if (newContent) handleUpdate(note.id, newContent);
+                    }}
+                    className="text-blue-600 hover:underline"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(note.id)}
+                    className="text-red-600 hover:underline"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+
+              {/* ✅ Date added */}
+              <div className="text-xs text-gray-500 mt-1">
+                Added: {note.createdAt?.toDate?.().toLocaleString?.() || "N/A"}
               </div>
             </div>
           ))
