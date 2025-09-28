@@ -257,22 +257,29 @@ textarea.form-input {
   background-color: var(--primary-color);
 }
 
-
 /* Book Cards (Image grid) */
 .book-card {
   position: relative;
   color: var(--white);
-  height: 100%;
-  border-radius: 8px;
+  border-radius: 12px;              /* smoother rounded edges */
   overflow: hidden;
+  background: var(--white);         /* so empty spaces look clean */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  aspect-ratio: 3 / 4;              /* keeps consistent book shape */
+}
+
+.book-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
 }
 
 .book-card img {
-    filter: brightness(0.8);
-    transition: filter 0.3s, transform 0.3s;
-    height: 100%;
-    width: 100%;
-    object-fit: cover;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;                /* cover the card perfectly */
+  filter: brightness(0.85);
+  transition: transform 0.3s ease, filter 0.3s ease;
 }
 
 .book-card:hover img {
@@ -281,9 +288,16 @@ textarea.form-input {
 }
 
 .book-name {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 10px 14px;
   font-weight: 600;
-  font-size: 20px;
+  font-size: 16px;
   text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+  background: linear-gradient(transparent, rgba(0,0,0,0.6));
+  color: var(--white);
 }
 
 /* Content Cards (Books with text below) */
