@@ -12,7 +12,7 @@ const fallbackImage = "/images/default-book.jpg";
 function Books({ searchQuery }) {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState("All"); // ✅ category state
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const { currentUser } = useAuth();
 
   useEffect(() => {
@@ -22,7 +22,7 @@ function Books({ searchQuery }) {
         const querySnapshot = await getDocs(booksCollectionRef);
         const booksList = querySnapshot.docs.map((doc) => ({
           id: doc.id,
-          category: "Uncategorized", // default
+          category: "Uncategorized", // default if missing
           ...doc.data(),
         }));
         setBooks(booksList);
@@ -89,35 +89,34 @@ function Books({ searchQuery }) {
         onChange={setSelectedCategory}
       />
 
+      {/* ✅ Responsive grid */}
       <div className="grid">
         {filteredBooks.length > 0 ? (
           filteredBooks.map((book) => (
-            <div className="grid-half grid-column" key={book.id}>
-              <div className="card">
-                <Link to={`/read/${book.id}`} className="book-card-link">
-                  <div className="book-card">
-                    <img
-                      src={book.coverImageURL || fallbackImage}
-                      alt={book.title}
-                      onError={(e) => (e.target.src = fallbackImage)}
-                    />
-                    <span className="position-absolute-bottom-left destination-name">
-                      {book.title}
-                      <br />
-                      <small className="category">{book.category}</small>
-                    </span>
-                  </div>
-                </Link>
+            <div className="card" key={book.id}>
+              <Link to={`/read/${book.id}`} className="book-card-link">
+                <div className="book-card">
+                  <img
+                    src={book.coverImageURL || fallbackImage}
+                    alt={book.title}
+                    onError={(e) => (e.target.src = fallbackImage)}
+                  />
+                  <span className="position-absolute-bottom-left destination-name">
+                    {book.title}
+                    <br />
+                    <small className="category">{book.category}</small>
+                  </span>
+                </div>
+              </Link>
 
-                {currentUser && (
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => handleBookmark(book)}
-                  >
-                    Bookmark
-                  </button>
-                )}
-              </div>
+              {currentUser && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => handleBookmark(book)}
+                >
+                  Bookmark
+                </button>
+              )}
             </div>
           ))
         ) : (

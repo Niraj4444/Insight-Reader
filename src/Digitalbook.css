@@ -450,16 +450,16 @@ textarea.form-input {
   max-width: 600px;
   z-index: 1; /* <-- important */
 }
-
-/* Book Grid Layout */
+/* Grid wrapper (applies for Books.jsx & Popularbooks.jsx) */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1rem;
+  align-items: start;
 }
 
-/* Remove the fixed 50% width */
+/* Remove fixed width so children adapt to grid */
 .grid-half {
-  width: auto;   /* reset */
-  flex: unset;   /* no flex sizing */
+  width: auto !important;
+  flex: unset !important;
 }
