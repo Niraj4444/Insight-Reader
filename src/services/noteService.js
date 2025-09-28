@@ -44,7 +44,7 @@ export const getNotes = async (userId) => {
  * Update a note
  * @param {string} userId - current user UID
  * @param {string} noteId - ID of the note
- * @param {string} content - new note text
+ * @param {string} content - new note text 
  */
 export const updateNote = async (userId, noteId, content) => {
   const noteRef = doc(db, "users", userId, "notes", noteId);
