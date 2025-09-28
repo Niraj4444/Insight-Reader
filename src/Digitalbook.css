@@ -450,3 +450,16 @@ textarea.form-input {
   max-width: 600px;
   z-index: 1; /* <-- important */
 }
+
+/* Book Grid Layout */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+/* Remove the fixed 50% width */
+.grid-half {
+  width: auto;   /* reset */
+  flex: unset;   /* no flex sizing */
+}
