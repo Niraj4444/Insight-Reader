@@ -1,18 +1,7 @@
+// src/components/NotesPanel.jsx
 import React, { useState, useEffect } from "react";
-import { db } from "../firebase";
-import {
-  collection,
-  addDoc,
-  query,
-  where,
-  orderBy,
-  onSnapshot,
-  deleteDoc,
-  doc,
-  updateDoc,
-  serverTimestamp,
-} from "firebase/firestore";
 import { useAuth } from "../context/AuthContext";
+import { addNote, getNotes, updateNote, deleteNote } from "../services/noteService";
 
 function NotesPanel({ bookId }) {
   const { currentUser } = useAuth();
@@ -20,47 +9,38 @@ function NotesPanel({ bookId }) {
   const [newNote, setNewNote] = useState("");
   const [search, setSearch] = useState("");
 
-  // 🔹 Load notes from Firestore
+  // Load notes for this book
   useEffect(() => {
-    if (!currentUser || !bookId) return;
-
-    const q = query(
-      collection(db, "notes"),
-      where("userId", "==", currentUser.uid),
-      where("bookId", "==", bookId),
-      orderBy("createdAt", "desc")
-    );
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      setNotes(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
-    });
-
-    return unsubscribe;
+    if (currentUser) {
+      getNotes(currentUser.uid).then((allNotes) => {
+        const bookNotes = allNotes.filter((n) => n.bookId === bookId);
+        setNotes(bookNotes);
+      });
+    }
   }, [bookId, currentUser]);
 
-  // 🔹 Add new note
-  const addNote = async () => {
+  const refreshNotes = async () => {
+    const allNotes = await getNotes(currentUser.uid);
+    setNotes(allNotes.filter((n) => n.bookId === bookId));
+  };
+
+  const handleAdd = async () => {
     if (!newNote.trim()) return;
-    await addDoc(collection(db, "notes"), {
-      content: newNote,
-      userId: currentUser.uid,
-      bookId,
-      createdAt: serverTimestamp(),
-    });
+    await addNote(currentUser.uid, bookId, newNote);
     setNewNote("");
+    await refreshNotes();
   };
 
-  // 🔹 Delete note
-  const deleteNote = async (id) => {
-    await deleteDoc(doc(db, "notes", id));
+  const handleUpdate = async (id, content) => {
+    await updateNote(currentUser.uid, id, content);
+    await refreshNotes();
   };
 
-  // 🔹 Edit note
-  const editNote = async (id, newContent) => {
-    await updateDoc(doc(db, "notes", id), { content: newContent });
+  const handleDelete = async (id) => {
+    await deleteNote(currentUser.uid, id);
+    await refreshNotes();
   };
 
-  // 🔹 Filter notes by search
   const filteredNotes = notes.filter((note) =>
     note.content.toLowerCase().includes(search.toLowerCase())
   );
@@ -86,7 +66,7 @@ function NotesPanel({ bookId }) {
         onChange={(e) => setNewNote(e.target.value)}
       />
       <button
-        onClick={addNote}
+        onClick={handleAdd}
         className="bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
       >
         ➕ Add Note
@@ -107,14 +87,14 @@ function NotesPanel({ bookId }) {
                 <button
                   onClick={() => {
                     const newContent = prompt("Edit your note:", note.content);
-                    if (newContent) editNote(note.id, newContent);
+                    if (newContent) handleUpdate(note.id, newContent);
                   }}
                   className="text-blue-600 hover:underline"
                 >
                   Edit
                 </button>
                 <button
-                  onClick={() => deleteNote(note.id)}
+                  onClick={() => handleDelete(note.id)}
                   className="text-red-600 hover:underline"
                 >
                   Delete

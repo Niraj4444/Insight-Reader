@@ -16,8 +16,8 @@ import UserProfilePage from "./pages/UserProfilePage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
 import BookReaderPage from "./pages/BookReaderPage";
-import SearchResultsPage from "./pages/SearchResultsPage"; // ✅ search page
-import NotesPage from "./pages/NotesPage"; // ✅ NEW
+import SearchResultsPage from "./pages/SearchResultsPage"; 
+import InsightDashboard from "./pages/InsightDashboard"; // ✅ renamed
 
 // Homepage layout
 function HomePage() {
@@ -54,7 +54,7 @@ export default function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<HomePage />} />
-            <Route path="/search" element={<SearchResultsPage />} /> {/* ✅ search */}
+            <Route path="/search" element={<SearchResultsPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
@@ -70,10 +70,10 @@ export default function App() {
               }
             />
             <Route
-              path="/notes"
+              path="/insight-dashboard" // ✅ updated path
               element={
                 <ProtectedRoute>
-                  <NotesPage />
+                  <InsightDashboard />
                 </ProtectedRoute>
               }
             />

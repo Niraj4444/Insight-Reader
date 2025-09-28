@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { addNote, getNotes, updateNote, deleteNote } from "../services/noteService";
-import NoteCard from "../components/NoteCard"; // new component
+import {
+  addNote,
+  getNotes,
+  updateNote,
+  deleteNote,
+} from "../services/noteService";
+import NoteCard from "../components/NoteCard"; // ✅ reusable note component
 
-export default function NotesPage() {
+export default function InsightDashboard() {
   const { currentUser } = useAuth();
   const [notes, setNotes] = useState([]);
   const [newNote, setNewNote] = useState("");
@@ -43,36 +48,37 @@ export default function NotesPage() {
   );
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Your Notes</h1>
+    <div className="p-6 max-w-3xl mx-auto">
+      {/* 🔹 Updated title */}
+      <h1 className="text-3xl font-bold mb-6">📖 Insight Dashboard</h1>
 
-      {/* Add new note */}
+      {/* Add new insight */}
       <textarea
         value={newNote}
         onChange={(e) => setNewNote(e.target.value)}
         placeholder="Write your insight..."
-        className="w-full border p-2 rounded mb-2"
+        className="w-full border p-3 rounded mb-3"
       />
       <button
         onClick={handleAdd}
-        className="bg-blue-600 text-white px-4 py-2 rounded"
+        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
       >
-        Add Note
+        ➕ Add Insight
       </button>
 
       {/* Search bar */}
-      <div className="mt-4">
+      <div className="mt-6">
         <input
           type="text"
-          placeholder="Search notes..."
+          placeholder="Search insights..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full border p-2 rounded"
+          className="w-full border p-3 rounded"
         />
       </div>
 
-      {/* Notes list */}
-      <div className="mt-4">
+      {/* Insights list */}
+      <div className="mt-6">
         {filteredNotes.length > 0 ? (
           filteredNotes.map((note) => (
             <NoteCard
@@ -83,7 +89,7 @@ export default function NotesPage() {
             />
           ))
         ) : (
-          <p className="text-gray-500">No notes found.</p>
+          <p className="text-gray-500">No insights yet.</p>
         )}
       </div>
     </div>

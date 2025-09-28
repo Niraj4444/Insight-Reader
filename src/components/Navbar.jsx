@@ -29,8 +29,9 @@ export default function Navbar() {
             <Link to="/bookmark" className="nav-link">
               Bookmark
             </Link>
-            <Link to="/notes" className="nav-link">
-              Notes
+            {/* 🔹 Renamed Notes → Insight Dashboard */}
+            <Link to="/insight-dashboard" className="nav-link">
+              Insight Dashboard
             </Link>
             <Link to="/user" className="nav-link">
               User
