@@ -414,3 +414,39 @@ textarea.form-input {
     width: 100%;
   }
 }
+/* --- Hero Image with Overlay --- */
+.header-content {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.hero-image {
+  width: 100%;
+  height: 620px; /* adjust height if needed */
+  object-fit: cover;
+  border-radius: 12px;
+  display: block;
+  filter: brightness(0.6); /* darken image directly */
+}
+
+/* Overlay effect on top of hero image */
+.header-content::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.35); /* semi-transparent dark overlay */
+  border-radius: 12px;
+  z-index: 0;
+}
+
+/* Ensure search content stays above overlay */
+.position-absolute-middle {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 600px;
+  z-index: 1; /* <-- important */
+}
