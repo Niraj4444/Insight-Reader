@@ -22,7 +22,7 @@ function Popularbooks() {
         const querySnapshot = await getDocs(booksCollectionRef);
         const booksList = querySnapshot.docs.map((doc) => ({
           id: doc.id,
-          popular: false, // default value in case missing
+          popular: false, // default if missing
           category: "Uncategorized", // default category
           ...doc.data(),
         }));
@@ -84,31 +84,29 @@ function Popularbooks() {
 
       <div className="grid">
         {filteredBooks.map((book) => (
-          <div className="grid-half grid-column" key={book.id}>
-            <div className="card">
-              <Link to={`/read/${book.id}`} className="book-card-link">
-                <div className="book-card">
-                  <img
-                    src={book.coverImageURL || fallbackImage}
-                    alt={book.title}
-                    onError={(e) => (e.target.src = fallbackImage)}
-                  />
-                  <span className="position-absolute-bottom-left destination-name">
-                    {book.title}
-                    <br />
-                    <small className="category">{book.category}</small>
-                  </span>
-                </div>
-              </Link>
-              {currentUser && (
-                <button
-                  className="btn btn-primary"
-                  onClick={() => handleBookmark(book)}
-                >
-                  Bookmark
-                </button>
-              )}
-            </div>
+          <div className="card" key={book.id}>
+            <Link to={`/read/${book.id}`} className="book-card-link">
+              <div className="book-card">
+                <img
+                  src={book.coverImageURL || fallbackImage}
+                  alt={book.title}
+                  onError={(e) => (e.target.src = fallbackImage)}
+                />
+                <span className="position-absolute-bottom-left destination-name">
+                  {book.title}
+                  <br />
+                  <small className="category">{book.category}</small>
+                </span>
+              </div>
+            </Link>
+            {currentUser && (
+              <button
+                className="btn btn-primary"
+                onClick={() => handleBookmark(book)}
+              >
+                Bookmark
+              </button>
+            )}
           </div>
         ))}
       </div>
