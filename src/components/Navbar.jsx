@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -7,6 +7,18 @@ import { auth } from '../firebase';
 export default function Navbar() {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
+
+  // ⭐ Theme state
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light');
+  };
 
   const handleLogout = async () => {
     try {
@@ -29,7 +41,6 @@ export default function Navbar() {
             <Link to="/bookmark" className="nav-link">
               Bookmark
             </Link>
-            {/* 🔹 Renamed Notes → Insight Dashboard */}
             <Link to="/insight-dashboard" className="nav-link">
               Insight Dashboard
             </Link>
@@ -53,6 +64,15 @@ export default function Navbar() {
             </Link>
           </>
         )}
+
+        {/* 🌗 Sun/Moon Toggle */}
+        <button
+          onClick={toggleTheme}
+          className="theme-toggle-btn"
+          aria-label="Toggle dark mode"
+        >
+          {theme === 'light' ? '🌙' : '☀️'}
+        </button>
       </div>
     </nav>
   );

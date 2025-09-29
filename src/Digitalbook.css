@@ -11,6 +11,15 @@
   --muted-text-color: #6c757d;
 }
 
+/* 🌙 Dark theme overrides */
+[data-theme='dark'] {
+  --light-gray: #1a1a1a;           /* page background */
+  --text-color: #ffffff;           /* main text */
+  --white: #2a2a2a;                /* cards / nav backgrounds */
+  --border-color: #444;            /* subtle borders */
+  --muted-text-color: #bbbbbb;     /* muted text */
+}
+
 body, h1, h2, h3, h4, h5, h6, button, input, textarea {
   font-family: "Poppins", sans-serif;
 }
