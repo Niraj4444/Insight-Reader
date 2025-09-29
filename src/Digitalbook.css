@@ -20,6 +20,24 @@
   --muted-text-color: #bbbbbb;     /* muted text */
 }
 
+.theme-toggle-btn {
+  background: none;
+  border: none;
+  font-size: 1.4rem; /* size of the icon */
+  cursor: pointer;
+  margin-left: 0.5rem;
+  line-height: 1;
+  color: var(--text-color); /* automatically adapts to theme */
+  padding: 0; /* no padding */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-toggle-btn:hover {
+  opacity: 0.8;
+}
+
 body, h1, h2, h3, h4, h5, h6, button, input, textarea {
   font-family: "Poppins", sans-serif;
 }
