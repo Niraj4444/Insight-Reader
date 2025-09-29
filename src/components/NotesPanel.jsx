@@ -1,6 +1,12 @@
+// src/components/NotesPanel.jsx
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { addNote, getNotes, updateNote, deleteNote } from "../services/noteService";
+import {
+  addNote,
+  getNotes,
+  updateNote,
+  deleteNote,
+} from "../services/noteService";
 
 function NotesPanel({ bookId, bookTitle }) {
   const { currentUser } = useAuth();
@@ -25,7 +31,6 @@ function NotesPanel({ bookId, bookTitle }) {
 
   const handleAdd = async () => {
     if (!newNote.trim()) return;
-    // ✅ Save with bookTitle
     await addNote(currentUser.uid, bookId, newNote, bookTitle);
     setNewNote("");
     await refreshNotes();
@@ -47,30 +52,33 @@ function NotesPanel({ bookId, bookTitle }) {
 
   return (
     <div className="bg-white shadow-lg rounded-xl p-4 flex flex-col h-full">
-      <h3 className="text-xl font-semibold mb-3">📝 My Notes for {bookTitle}</h3>
+      <h3 className="text-xl font-semibold mb-3">
+        📝 My Notes for {bookTitle}
+      </h3>
 
       {/* Search */}
-      <input
-        type="text"
-        placeholder="Search notes..."
-        className="w-full border p-2 rounded mb-3"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
+      <div className="insight-input-group">
+        <input
+          type="text"
+          placeholder="Search notes..."
+          className="insight-search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
 
       {/* Add new note */}
-      <textarea
-        placeholder={`Write your insight about "${bookTitle}"...`}
-        className="w-full border p-2 rounded mb-2"
-        value={newNote}
-        onChange={(e) => setNewNote(e.target.value)}
-      />
-      <button
-        onClick={handleAdd}
-        className="bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
-      >
-        ➕ Add Note
-      </button>
+      <div className="insight-input-group">
+        <textarea
+          placeholder={`Write your insight about "${bookTitle}"...`}
+          className="insight-textarea"
+          value={newNote}
+          onChange={(e) => setNewNote(e.target.value)}
+        />
+        <button onClick={handleAdd} className="insight-btn">
+          ➕ Add Note
+        </button>
+      </div>
 
       {/* Notes list */}
       <div className="mt-4 flex-1 overflow-y-auto">
@@ -78,17 +86,17 @@ function NotesPanel({ bookId, bookTitle }) {
           <p className="text-gray-500">No notes yet for this book.</p>
         ) : (
           filteredNotes.map((note) => (
-            <div
-              key={note.id}
-              className="p-3 mb-3 border rounded bg-gray-50"
-            >
+            <div key={note.id} className="p-3 mb-3 border rounded bg-gray-50">
               {/* Note content */}
               <div className="flex justify-between items-start">
                 <span>{note.content}</span>
                 <div className="flex gap-2 text-sm">
                   <button
                     onClick={() => {
-                      const newContent = prompt("Edit your note:", note.content);
+                      const newContent = prompt(
+                        "Edit your note:",
+                        note.content
+                      );
                       if (newContent) handleUpdate(note.id, newContent);
                     }}
                     className="text-blue-600 hover:underline"
@@ -104,7 +112,7 @@ function NotesPanel({ bookId, bookTitle }) {
                 </div>
               </div>
 
-              {/* ✅ Date added */}
+              {/* Date added */}
               <div className="text-xs text-gray-500 mt-1">
                 Added: {note.createdAt?.toDate?.().toLocaleString?.() || "N/A"}
               </div>

@@ -463,3 +463,59 @@ textarea.form-input {
   width: auto !important;
   flex: unset !important;
 }
+/* ======================================================== */
+/*  NOTES & INSIGHTS STYLES (Dashboard + NotesPanel)        */
+/* ======================================================== */
+.insight-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.insight-input,
+.insight-textarea,
+.insight-search {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 16px;
+  box-sizing: border-box;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.insight-input:focus,
+.insight-textarea:focus,
+.insight-search:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(216, 46, 47, 0.2);
+}
+
+.insight-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Add buttons */
+.insight-btn {
+  background-color: var(--primary-color);
+  color: var(--white);
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  text-align: center;
+}
+
+.insight-btn:hover {
+  background-color: #a82223;
+}
+
+.insight-btn:active {
+  transform: scale(0.98);
+}

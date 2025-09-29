@@ -1,3 +1,4 @@
+// src/pages/InsightDashboard.jsx
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import {
@@ -56,27 +57,26 @@ export default function InsightDashboard() {
       <h1 className="text-3xl font-bold mb-6">📖 Insight Dashboard</h1>
 
       {/* Add new insight */}
-      <textarea
-        value={newNote}
-        onChange={(e) => setNewNote(e.target.value)}
-        placeholder="Write your insight..."
-        className="w-full border p-3 rounded mb-3"
-      />
-      <button
-        onClick={handleAdd}
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-      >
-        ➕ Add Insight
-      </button>
+      <div className="insight-input-group">
+        <textarea
+          value={newNote}
+          onChange={(e) => setNewNote(e.target.value)}
+          placeholder="Write your insight..."
+          className="insight-textarea"
+        />
+        <button onClick={handleAdd} className="insight-btn">
+          ➕ Add Insight
+        </button>
+      </div>
 
       {/* Search bar */}
-      <div className="mt-6">
+      <div className="insight-input-group">
         <input
           type="text"
           placeholder="Search by book title or insight text..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full border p-3 rounded"
+          className="insight-search"
         />
       </div>
 
