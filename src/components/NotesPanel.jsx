@@ -51,52 +51,59 @@ function NotesPanel({ bookId, bookTitle }) {
   );
 
   return (
-    <div className="bg-white shadow-lg rounded-xl p-4 flex flex-col h-full">
-      <h3 className="text-xl font-semibold mb-3">
+    <div className="bg-white shadow-lg rounded-xl p-4 flex flex-col h-full max-w-full">
+      <h3 className="text-xl font-semibold mb-3 break-words">
         📝 My Notes for {bookTitle}
       </h3>
 
       {/* Search */}
-      <div className="insight-input-group">
+      <div className="insight-input-group mb-3">
         <input
           type="text"
           placeholder="Search notes..."
-          className="insight-search"
+          className="insight-search w-full p-2 border rounded-lg break-words"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
 
       {/* Add new note */}
-      <div className="insight-input-group">
+      <div className="insight-input-group mb-3">
         <textarea
           placeholder={`Write your insight about "${bookTitle}"...`}
-          className="insight-textarea"
+          className="insight-textarea w-full p-3 border rounded-lg resize-y overflow-auto break-words"
           value={newNote}
           onChange={(e) => setNewNote(e.target.value)}
+          style={{ minHeight: "80px" }}
         />
-        <button onClick={handleAdd} className="insight-btn">
+        <button
+          onClick={handleAdd}
+          className="insight-btn mt-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+        >
           ➕ Add Note
         </button>
       </div>
 
       {/* Notes list */}
-      <div className="mt-4 flex-1 overflow-y-auto">
+      <div className="mt-4 flex-1 overflow-y-auto space-y-3">
         {filteredNotes.length === 0 ? (
           <p className="text-gray-500">No notes yet for this book.</p>
         ) : (
           filteredNotes.map((note) => (
-            <div key={note.id} className="p-3 mb-3 border rounded bg-gray-50">
+            <div
+              key={note.id}
+              className="p-3 border rounded bg-gray-50 break-words"
+              style={{ wordWrap: "break-word", overflowWrap: "anywhere" }}
+            >
               {/* Note content */}
-              <div className="flex justify-between items-start">
-                <span>{note.content}</span>
-                <div className="flex gap-2 text-sm">
+              <div className="flex justify-between items-start gap-2">
+                <span className="whitespace-pre-wrap break-words flex-1">
+                  {note.content}
+                </span>
+                <div className="flex gap-2 text-sm shrink-0">
                   <button
                     onClick={() => {
-                      const newContent = prompt(
-                        "Edit your note:",
-                        note.content
-                      );
+                      const newContent = prompt("Edit your note:", note.content);
                       if (newContent) handleUpdate(note.id, newContent);
                     }}
                     className="text-blue-600 hover:underline"
