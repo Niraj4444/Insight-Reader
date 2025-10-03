@@ -24,14 +24,33 @@ export default function Recommendations({ currentBook }) {
         .map((b) => {
           let score = 0;
 
-          // ✅ Priority 1: same author
+          // Convert seriesOrder to numbers for correct comparison
+          const bOrder = Number(b.seriesOrder);
+          const currOrder = Number(currentBook.seriesOrder);
+
+          // ✅ Priority 1: Same series
+          if (b.series?.toLowerCase() === currentBook.series?.toLowerCase()) {
+            if (!isNaN(bOrder) && !isNaN(currOrder)) {
+              if (bOrder === currOrder + 1) {
+                score += 10; // next book in the series
+              } else if (bOrder === currOrder - 1) {
+                score += 7; // previous book in the series
+              } else {
+                score += 5; // same series, other part
+              }
+            } else {
+              score += 3; // same series but missing order info
+            }
+          }
+
+          // ✅ Priority 2: same author
           if (
             b.author?.toLowerCase() === currentBook.author?.toLowerCase()
           ) {
-            score += 2;
+            score += 3;
           }
 
-          // ✅ Priority 2: same category
+          // ✅ Priority 3: same category
           if (
             b.category?.toLowerCase() === currentBook.category?.toLowerCase()
           ) {
@@ -42,7 +61,10 @@ export default function Recommendations({ currentBook }) {
         })
         .filter((b) => b.score > 0);
 
+      // Sort by score (highest first)
       sims.sort((a, b) => b.score - a.score);
+
+      // Show top 3 recommendations
       setRecommended(sims.slice(0, 3));
     };
 
@@ -77,7 +99,6 @@ export default function Recommendations({ currentBook }) {
         {recommended.map((book) => (
           <div className="grid-half grid-column" key={book.id}>
             <div className="card">
-              {/* clickable card like PopularBooks */}
               <Link to={`/read/${book.id}`} className="book-card-link">
                 <div className="book-card">
                   <img
@@ -95,7 +116,6 @@ export default function Recommendations({ currentBook }) {
                 </div>
               </Link>
 
-              {/* bookmark button below card */}
               {currentUser && (
                 <button
                   className="btn btn-primary"
