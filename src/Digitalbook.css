@@ -450,7 +450,7 @@ textarea.form-input {
 
 .hero-image {
   width: 100%;
-  height: 620px; /* adjust height if needed */
+  height: 340px; /* adjust height if needed */
   object-fit: cover;
   border-radius: 12px;
   display: block;
