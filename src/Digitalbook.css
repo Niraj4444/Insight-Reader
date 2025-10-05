@@ -591,3 +591,18 @@ textarea.form-input {
 [data-theme='dark'] .insight-btn:hover {
   background-color: #a82223;
 }
+
+/* ============================================= */
+/* ✅ FINAL FIX: Make book titles readable in dark mode */
+/* ============================================= */
+[data-theme='dark'] .destination-name,
+[data-theme='dark'] .destination-name small,
+[data-theme='dark'] .destination-name .category {
+  color: #ffffff !important;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.9);
+}
+
+[data-theme='dark'] .book-card {
+  background: #1e1e1e;
+}
+
