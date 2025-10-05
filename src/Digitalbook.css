@@ -11,13 +11,14 @@
   --muted-text-color: #6c757d;
 }
 
-/* 🌙 Dark theme overrides */
+/* 🌙 Dark theme overrides - Enhanced for better readability */
 [data-theme='dark'] {
-  --light-gray: #1a1a1a;           /* page background */
-  --text-color: #ffffff;           /* main text */
-  --white: #2a2a2a;                /* cards / nav backgrounds */
-  --border-color: #444;            /* subtle borders */
-  --muted-text-color: #bbbbbb;     /* muted text */
+  --light-gray: #121212;          /* Main background */
+  --text-color: #f1f1f1;          /* Primary text color - brighter white */
+  --white: #1e1e1e;               /* Navbar & cards background */
+  --border-color: #333;           /* Softer but visible borders */
+  --muted-text-color: #bbbbbb;    /* Muted text for descriptions */
+  --secondary-color: #e0e0e0;     /* Navbar links and secondary text */
 }
 
 .theme-toggle-btn {
@@ -545,4 +546,48 @@ textarea.form-input {
 
 .insight-btn:active {
   transform: scale(0.98);
+}
+/* --- DARK MODE VISUAL FIXES --- */
+
+/* Navbar - keep it readable in dark mode */
+[data-theme='dark'] .navbar {
+  background-color: var(--white);  /* dark bg */
+  border-bottom: 1px solid var(--border-color);
+}
+
+[data-theme='dark'] .nav-link {
+  color: var(--secondary-color);
+}
+
+[data-theme='dark'] .nav-link:hover {
+  color: var(--primary-color);
+}
+
+/* Book cards text readability */
+[data-theme='dark'] .book-card {
+  background: #1e1e1e;
+}
+
+[data-theme='dark'] .book-name {
+  color: #ffffff;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.9);
+}
+
+/* Ensure normal cards (like contact or notes) stay clear */
+[data-theme='dark'] .card,
+[data-theme='dark'] .content-card {
+  background-color: #1e1e1e;
+  color: var(--text-color);
+}
+
+/* Buttons look balanced in dark mode */
+[data-theme='dark'] .btn-primary-nav,
+[data-theme='dark'] .insight-btn {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+[data-theme='dark'] .btn-primary-nav:hover,
+[data-theme='dark'] .insight-btn:hover {
+  background-color: #a82223;
 }
