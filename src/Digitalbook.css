@@ -593,16 +593,33 @@ textarea.form-input {
 }
 
 /* ============================================= */
-/* ✅ FINAL FIX: Make book titles readable in dark mode */
+/* ✅ BOOK TEXT STYLE (Same for light & dark mode) */
 /* ============================================= */
-[data-theme='dark'] .destination-name,
-[data-theme='dark'] .destination-name small,
-[data-theme='dark'] .destination-name .category {
+
+/* Both modes use white text for better readability over images */
+.destination-name,
+.destination-name small,
+.destination-name .category {
   color: #ffffff !important;
-  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.9);
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8); /* subtle shadow to stand out on bright covers */
 }
 
+/* Optional: dark mode background tweak for consistency */
 [data-theme='dark'] .book-card {
   background: #1e1e1e;
 }
+/* ============================================= */
+/* ✅ FIX: BookReader Description Color in Dark Mode */
+/* ============================================= */
 
+.book-description {
+  margin-bottom: 15px;
+  font-size: 1rem;
+  color: var(--text-color); /* automatically adapts to theme */
+  line-height: 1.6;
+}
+
+/* Dark mode override for even better readability */
+[data-theme='dark'] .book-description {
+  color: #f1f1f1; /* bright white text */
+}

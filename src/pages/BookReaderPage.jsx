@@ -73,9 +73,7 @@ function BookReaderPage() {
 
         {/* ✅ Book description */}
         {book.description && (
-          <p style={{ marginBottom: "15px", color: "#444", fontSize: "1rem" }}>
-            {book.description}
-          </p>
+          <p className="book-description">{book.description}</p>
         )}
 
         {/* PDF Preview */}
