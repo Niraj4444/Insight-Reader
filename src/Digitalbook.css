@@ -623,3 +623,115 @@ textarea.form-input {
 [data-theme='dark'] .book-description {
   color: #f1f1f1; /* bright white text */
 }
+
+/* ======================================================== */
+/* 🧍 USER PROFILE PAGE STYLES                              */
+/* ======================================================== */
+.profile-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 90vh;
+  background-color: var(--light-gray);
+  padding: 2rem 1rem;
+}
+
+.profile-card {
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.profile-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.profile-avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  font-weight: 700;
+  margin: 0 auto 1rem;
+}
+
+.profile-card h1 {
+  font-size: 1.8rem;
+  margin-bottom: 0.3rem;
+  color: var(--text-color);
+}
+
+.profile-card p {
+  color: var(--muted-text-color);
+  margin-bottom: 1.2rem;
+  font-size: 1rem;
+}
+
+.profile-info {
+  text-align: left;
+  margin-top: 1.5rem;
+}
+
+.profile-info p {
+  margin: 0.4rem 0;
+  color: var(--text-color);
+}
+
+.profile-info span {
+  font-weight: 600;
+  color: var(--secondary-color);
+}
+
+.profile-actions {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.profile-btn {
+  display: inline-block;
+  padding: 0.75rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  text-align: center;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.profile-btn-primary {
+  background-color: var(--primary-color);
+  color: var(--white);
+}
+
+.profile-btn-primary:hover {
+  background-color: #a82223;
+}
+
+.profile-btn-outline {
+  border: 2px solid var(--primary-color);
+  color: var(--primary-color);
+  background: transparent;
+}
+
+.profile-btn-outline:hover {
+  background-color: rgba(216, 46, 47, 0.08);
+}
+
+.profile-footer {
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: var(--muted-text-color);
+}
