@@ -7,16 +7,21 @@ import "../Digitalbook.css";
 export default function UserProfilePage() {
   const { currentUser } = useAuth();
 
+  // Use profile image if available, otherwise default logo
+  const profileImage = currentUser?.photoURL || "/Nn.svg";
+
   return (
     <div className="profile-page">
       <div className="profile-card">
         {/* Avatar */}
-        <div className="profile-avatar">
-          {currentUser?.email?.charAt(0).toUpperCase() || "U"}
-        </div>
+        <img
+          src={profileImage}
+          alt="Profile"
+          className="profile-avatar-img"
+        />
 
         {/* Title */}
-        <h1>User Profile</h1>
+        <h1>{currentUser?.displayName || "User Profile"}</h1>
         <p>Manage your account information and reading insights.</p>
 
         {/* Info */}
@@ -37,15 +42,16 @@ export default function UserProfilePage() {
           <Link to="/contact" className="profile-btn profile-btn-primary">
             Contact Support
           </Link>
-          <Link to="/insight-dashboard" className="profile-btn profile-btn-outline">
+          <Link
+            to="/insight-dashboard"
+            className="profile-btn profile-btn-outline"
+          >
             View Insights
           </Link>
         </div>
 
         {/* Footer */}
-        <p className="profile-footer">
-          Logged in as: {currentUser?.email}
-        </p>
+        <p className="profile-footer">Logged in as: {currentUser?.email}</p>
       </div>
     </div>
   );
