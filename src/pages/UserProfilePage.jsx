@@ -8,7 +8,7 @@ export default function UserProfilePage() {
   const { currentUser } = useAuth();
 
   // Use profile image if available, otherwise default logo
-  const profileImage = currentUser?.photoURL || "/Nn.svg";
+  const profileImage = currentUser?.photoURL || "/user.jpg";
 
   return (
     <div className="profile-page">

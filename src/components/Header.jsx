@@ -19,7 +19,7 @@ function Header() {
     <header className="header-content position-relative">
       <img
         className="hero-image"
-        src="/images/Clash.jpg"
+        src="/images/cover.jpg"
         alt="A library or a reading scene"
       />
 
