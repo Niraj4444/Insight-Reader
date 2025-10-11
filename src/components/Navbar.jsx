@@ -1,3 +1,4 @@
+// src/components/Navbar.jsx
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
@@ -44,6 +45,12 @@ export default function Navbar() {
             <Link to="/insight-dashboard" className="nav-link">
               Insight Dashboard
             </Link>
+
+            {/* ✅ Added All Books Link (visible to logged-in users) */}
+            <Link to="/all-books" className="nav-link">
+              All Books
+            </Link>
+
             <Link to="/user" className="nav-link">
               User
             </Link>
@@ -53,6 +60,11 @@ export default function Navbar() {
           </>
         ) : (
           <>
+            {/* ✅ Added All Books Link (visible even before login) */}
+            <Link to="/all-books" className="nav-link">
+              All Books
+            </Link>
+
             <Link to="/contact" className="nav-link">
               Contact
             </Link>

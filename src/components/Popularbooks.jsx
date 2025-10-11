@@ -73,7 +73,7 @@ function Popularbooks() {
     <>
       <div className="section section-margin-top">
         <h3>Popular Books</h3>
-        <p>Explore all the books you can think of.</p>
+        <p>Explore a curated collection of the world's most popular books.</p>
       </div>
 
       <CategoryFilter

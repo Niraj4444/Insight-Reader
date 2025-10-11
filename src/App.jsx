@@ -16,8 +16,11 @@ import UserProfilePage from "./pages/UserProfilePage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
 import BookReaderPage from "./pages/BookReaderPage";
-import SearchResultsPage from "./pages/SearchResultsPage"; 
-import InsightDashboard from "./pages/InsightDashboard"; // ✅ renamed
+import SearchResultsPage from "./pages/SearchResultsPage";
+import InsightDashboard from "./pages/InsightDashboard";
+
+// ✅ NEW IMPORT
+import AllBooksPage from "./pages/AllBooksPage"; // <-- new page we'll add
 
 // Homepage layout
 function HomePage() {
@@ -25,11 +28,8 @@ function HomePage() {
     <>
       <Header />
       <div className="main-content">
-        {/* ✅ Popular books first */}
+        {/* ✅ Only Popular Books on homepage now */}
         <Popularbooks />
-
-        {/* ✅ Then all books */}
-        <Books searchQuery="" />
       </div>
     </>
   );
@@ -60,7 +60,10 @@ export default function App() {
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/read/:bookId" element={<BookReaderPage />} />
 
-            {/* Protected */}
+            {/* ✅ New All Books route */}
+            <Route path="/all-books" element={<AllBooksPage />} />
+
+            {/* Protected routes */}
             <Route
               path="/bookmark"
               element={
@@ -70,7 +73,7 @@ export default function App() {
               }
             />
             <Route
-              path="/insight-dashboard" // ✅ updated path
+              path="/insight-dashboard"
               element={
                 <ProtectedRoute>
                   <InsightDashboard />
