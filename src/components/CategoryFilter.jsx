@@ -1,15 +1,15 @@
 // src/components/CategoryFilter.jsx
 import React from "react";
+import "./CategoryFilter.css"; // ✅ add this line
 
 export default function CategoryFilter({ selected, categories, onChange }) {
   return (
-    <div className="category-filter" style={{ margin: "1rem 0" }}>
+    <div className="category-scroll">
       {categories.map((cat) => (
         <button
           key={cat}
           onClick={() => onChange(cat)}
-          className={`btn ${selected === cat ? "btn-primary" : "btn-secondary"}`}
-          style={{ marginRight: "0.5rem", marginBottom: "0.5rem" }}
+          className={`category-btn ${selected === cat ? "active" : ""}`}
         >
           {cat}
         </button>
