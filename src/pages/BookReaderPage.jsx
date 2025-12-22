@@ -66,9 +66,16 @@ function BookReaderPage() {
         gap: "20px",
         padding: "20px",
       }}
-    > /
+    >
       {/* LEFT: Book Info + Preview */}
-      <div style={{ flex: 3, height: "100%", display: "flex", flexDirection: "column" }}>
+      <div
+        style={{
+          flex: 3,
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
         <h2 style={{ marginBottom: "10px" }}>Reading: {book.title}</h2>
 
         {/* ✅ Book description */}
@@ -85,9 +92,9 @@ function BookReaderPage() {
           style={{ border: "none", borderRadius: "10px", flex: 1 }}
           allow="autoplay"
         />
-      </div>  
+      </div>
 
-      {/* RIGHT: Download + Recommendations + Notes */}
+      {/* RIGHT: Download + Notes + Recommendations */}
       <div
         style={{
           flex: 1,
@@ -96,8 +103,8 @@ function BookReaderPage() {
           gap: "20px",
           overflowY: "auto",
         }}
-      >  
-        {/*        
+      >
+        {/*
         <div className="flex flex-col items-center">
           <h3 className="text-xl font-semibold mb-3">Download Book</h3>
           <a
@@ -109,11 +116,12 @@ function BookReaderPage() {
           </a>
         </div>
         */}
-        {/* Recommendations */}
-        <Recommendations currentBook={book} />
 
-        {/* ✅ Companion Notes */}
+        {/* ✅ Notes FIRST */}
         <NotesPanel bookId={bookId} bookTitle={book.title} />
+
+        {/* ✅ Recommendations BELOW */}
+        <Recommendations currentBook={book} />
       </div>
     </div>
   );
