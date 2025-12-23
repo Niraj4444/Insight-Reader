@@ -1,7 +1,7 @@
 // src/firebase.js
 
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 // ✅ Dual fallback: use Replit secret if available, otherwise fallback to public key
@@ -21,3 +21,4 @@ const app = initializeApp(firebaseConfig);
 // ✅ Initialize Firebase services
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+export const googleProvider = new GoogleAuthProvider();

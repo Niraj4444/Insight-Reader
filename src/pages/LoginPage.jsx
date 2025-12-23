@@ -1,54 +1,64 @@
 // src/pages/LoginPage.jsx
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
-import { auth } from '../firebase'; // Firebase untouched
-import './LoginPage.css'; // Your provided styles
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import {
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+  signInWithPopup,
+} from "firebase/auth";
+import { auth, googleProvider } from "../firebase";
+import "./LoginPage.css";
 
 export default function LoginPage() {
-  // Firebase states
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [message, setMessage] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
 
+  // 🔐 Email/password login
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError('');
-    setMessage('');
-
-    if (!email || !password) {
-      setError('Please enter both email and password.');
-      return;
-    }
+    setError("");
+    setMessage("");
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate('/bookmark'); // Redirect on success
+      navigate("/bookmark");
     } catch (err) {
       setError(err.message);
-      console.error('Login failed:', err);
     }
   };
 
-  // Forgot password handler
+  // 🔑 Google login
+  const handleGoogleLogin = async () => {
+    setError("");
+    setMessage("");
+
+    try {
+      await signInWithPopup(auth, googleProvider);
+      navigate("/bookmark");
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  // 🔁 Forgot password
   const handleForgotPassword = async () => {
-    setError('');
-    setMessage('');
+    setError("");
+    setMessage("");
 
     if (!email) {
-      setError('Please enter your email first.');
+      setError("Please enter your email first.");
       return;
     }
 
     try {
       await sendPasswordResetEmail(auth, email);
-      setMessage('Password reset email sent! Check your inbox.');
+      setMessage("Password reset email sent!");
     } catch (err) {
       setError(err.message);
-      console.error('Password reset failed:', err);
     }
   };
 
@@ -81,15 +91,28 @@ export default function LoginPage() {
             />
           </div>
 
-          {error && <p style={{ color: 'red', marginBottom: '1rem' }}>{error}</p>}
-          {message && <p style={{ color: 'green', marginBottom: '1rem' }}>{message}</p>}
+          {error && <p style={{ color: "red" }}>{error}</p>}
+          {message && <p style={{ color: "green" }}>{message}</p>}
 
           <button type="submit" className="login-btn">
             Log In
           </button>
         </form>
 
-        {/* Forgot password link */}
+        {/* 🔵 Google Button */}
+        <button
+          onClick={handleGoogleLogin}
+          className="login-btn"
+          style={{
+            background: "#fff",
+            color: "#000",
+            border: "1px solid #ccc",
+            marginTop: "10px",
+          }}
+        >
+          Continue with Google
+        </button>
+
         <p className="forgot-password-link">
           <button onClick={handleForgotPassword} className="link-button">
             Forgot Password?
@@ -97,8 +120,7 @@ export default function LoginPage() {
         </p>
 
         <p className="signup-link">
-          Don&apos;t have an account yet?{' '}
-          <Link to="/signup">Sign up</Link>
+          Don&apos;t have an account yet? <Link to="/signup">Sign up</Link>
         </p>
       </div>
     </div>
