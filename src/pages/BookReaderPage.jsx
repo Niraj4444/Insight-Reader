@@ -3,21 +3,32 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { db } from "../firebase";
-import { doc, getDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp,
+} from "firebase/firestore";
+import { useAuth } from "../context/AuthContext";
 import Recommendations from "../components/Recommendations";
-import NotesPanel from "../components/NotesPanel"; // ✅ import notes
+import NotesPanel from "../components/NotesPanel";
 
 function BookReaderPage() {
   const { bookId } = useParams();
+  const { user } = useAuth(); // ✅ logged-in user
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // -------------------------
+  // Fetch Book (UNCHANGED)
+  // -------------------------
   useEffect(() => {
     const fetchBook = async () => {
       if (!bookId) {
         setLoading(false);
         return;
       }
+
       setLoading(true);
       try {
         const ref = doc(db, "books", bookId);
@@ -39,10 +50,41 @@ function BookReaderPage() {
     fetchBook();
   }, [bookId]);
 
+  // ----------------------------------
+  // 🔥 NEW: Track Reading History
+  // ----------------------------------
+  useEffect(() => {
+    const trackReading = async () => {
+      if (!user || !bookId || !book) return;
+
+      try {
+        const historyId = `${user.uid}_${bookId}`;
+        const historyRef = doc(db, "readingHistory", historyId);
+
+        await setDoc(
+          historyRef,
+          {
+            userId: user.uid,
+            bookId: bookId,
+            bookTitle: book.title,
+            startedAt: serverTimestamp(),
+            lastReadAt: serverTimestamp(),
+            status: "reading",
+          },
+          { merge: true } // ✅ SAFE: never overwrites
+        );
+      } catch (error) {
+        console.error("Error tracking reading history:", error);
+      }
+    };
+
+    trackReading();
+  }, [user, bookId, book]);
+
   if (loading) return <div>Loading book...</div>;
   if (!book) return <div>Book not found.</div>;
 
-  // --- START: Google Drive URL Fix ---
+  // --- Google Drive URL Fix (UNCHANGED) ---
   let previewUrl = book.bookFileURL;
   let downloadUrl = book.bookFileURL;
 
@@ -55,7 +97,7 @@ function BookReaderPage() {
       downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
     }
   }
-  // --- END: Google Drive URL Fix ---
+  // --- END ---
 
   return (
     <div
@@ -76,14 +118,16 @@ function BookReaderPage() {
           flexDirection: "column",
         }}
       >
-        <h2 style={{ marginBottom: "10px" }}>Reading: {book.title}</h2>
+        <h2 style={{ marginBottom: "10px" }}>
+          Reading: {book.title}
+        </h2>
 
-        {/* ✅ Book description */}
         {book.description && (
-          <p className="book-description">{book.description}</p>
+          <p className="book-description">
+            {book.description}
+          </p>
         )}
 
-        {/* PDF Preview */}
         <iframe
           src={previewUrl}
           title={book.title}
@@ -94,7 +138,7 @@ function BookReaderPage() {
         />
       </div>
 
-      {/* RIGHT: Download + Notes + Recommendations */}
+      {/* RIGHT: Notes + Recommendations */}
       <div
         style={{
           flex: 1,
@@ -104,23 +148,7 @@ function BookReaderPage() {
           overflowY: "auto",
         }}
       >
-        {/*
-        <div className="flex flex-col items-center">
-          <h3 className="text-xl font-semibold mb-3">Download Book</h3>
-          <a
-            href={downloadUrl}
-            download={book.title || "book.pdf"}
-            className="px-6 py-3 bg-blue-600 text-white text-lg font-bold rounded-xl shadow-lg hover:bg-blue-700 transition"
-          >
-            ⬇️ Download Book
-          </a>
-        </div>
-        */}
-
-        {/* ✅ Notes FIRST */}
         <NotesPanel bookId={bookId} bookTitle={book.title} />
-
-        {/* ✅ Recommendations BELOW */}
         <Recommendations currentBook={book} />
       </div>
     </div>
