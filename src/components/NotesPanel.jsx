@@ -6,6 +6,7 @@ import {
   getNotes,
   updateNote,
   deleteNote,
+  toggleImportant, // ⭐ NEW
 } from "../services/noteService";
 
 function NotesPanel({ bookId, bookTitle }) {
@@ -14,12 +15,11 @@ function NotesPanel({ bookId, bookTitle }) {
   const [newNote, setNewNote] = useState("");
   const [search, setSearch] = useState("");
 
-  // Load notes for this book
+  // Load notes
   useEffect(() => {
     if (currentUser) {
       getNotes(currentUser.uid).then((allNotes) => {
-        const bookNotes = allNotes.filter((n) => n.bookId === bookId);
-        setNotes(bookNotes);
+        setNotes(allNotes.filter((n) => n.bookId === bookId));
       });
     }
   }, [bookId, currentUser]);
@@ -46,6 +46,11 @@ function NotesPanel({ bookId, bookTitle }) {
     await refreshNotes();
   };
 
+  const handleToggleImportant = async (id, current) => {
+    await toggleImportant(currentUser.uid, id, current); // ⭐ NEW
+    await refreshNotes();
+  };
+
   const filteredNotes = notes.filter((note) =>
     note.content.toLowerCase().includes(search.toLowerCase())
   );
@@ -67,7 +72,7 @@ function NotesPanel({ bookId, bookTitle }) {
         />
       </div>
 
-      {/* Add new note */}
+      {/* Add note */}
       <div className="insight-input-group mb-3">
         <textarea
           placeholder={`Write your insight about "${bookTitle}"...`}
@@ -92,34 +97,53 @@ function NotesPanel({ bookId, bookTitle }) {
           filteredNotes.map((note) => (
             <div
               key={note.id}
-              className="p-3 border rounded bg-gray-50 break-words"
+              className={`p-3 border rounded break-words ${
+                note.important
+                  ? "bg-yellow-50 border-yellow-300"
+                  : "bg-gray-50"
+              }`}
               style={{ wordWrap: "break-word", overflowWrap: "anywhere" }}
             >
-              {/* Note content */}
               <div className="flex justify-between items-start gap-2">
                 <span className="whitespace-pre-wrap break-words flex-1">
                   {note.content}
                 </span>
-                <div className="flex gap-2 text-sm shrink-0">
-                  <button
-                    onClick={() => {
-                      const newContent = prompt("Edit your note:", note.content);
-                      if (newContent) handleUpdate(note.id, newContent);
-                    }}
-                    className="text-blue-600 hover:underline"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(note.id)}
-                    className="text-red-600 hover:underline"
-                  >
-                    Delete
-                  </button>
-                </div>
+
+                {/* ⭐ Important (kept minimal, non-intrusive) */}
+                <button
+                  onClick={() =>
+                    handleToggleImportant(note.id, note.important)
+                  }
+                  className="text-xl shrink-0"
+                  title="Mark as important"
+                  style={{ color: note.important ? "gold" : "#ccc" }}
+                >
+                  ⭐
+                </button>
               </div>
 
-              {/* Date added */}
+              {/* Actions */}
+              <div className="flex gap-3 text-sm mt-2">
+                <button
+                  onClick={() => {
+                    const newContent = prompt(
+                      "Edit your note:",
+                      note.content
+                    );
+                    if (newContent) handleUpdate(note.id, newContent);
+                  }}
+                  className="text-blue-600 hover:underline"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(note.id)}
+                  className="text-red-600 hover:underline"
+                >
+                  Delete
+                </button>
+              </div>
+
               <div className="text-xs text-gray-500 mt-1">
                 Added: {note.createdAt?.toDate?.().toLocaleString?.() || "N/A"}
               </div>

@@ -1,4 +1,3 @@
-// src/pages/InsightDashboard.jsx
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import {
@@ -6,6 +5,7 @@ import {
   getNotes,
   updateNote,
   deleteNote,
+  toggleImportant, // ⭐ NEW
 } from "../services/noteService";
 import NoteCard from "../components/NoteCard";
 
@@ -27,11 +27,10 @@ export default function InsightDashboard() {
   };
 
   const handleAdd = async () => {
-    if (newNote.trim()) {
-      await addNote(currentUser.uid, "general", newNote);
-      setNewNote("");
-      await refreshNotes();
-    }
+    if (!newNote.trim()) return;
+    await addNote(currentUser.uid, "general", newNote);
+    setNewNote("");
+    await refreshNotes();
   };
 
   const handleUpdate = async (id, content) => {
@@ -41,6 +40,11 @@ export default function InsightDashboard() {
 
   const handleDelete = async (id) => {
     await deleteNote(currentUser.uid, id);
+    await refreshNotes();
+  };
+
+  const handleToggleImportant = async (id, current) => {
+    await toggleImportant(currentUser.uid, id, current); // ⭐ NEW
     await refreshNotes();
   };
 
@@ -96,6 +100,7 @@ export default function InsightDashboard() {
                 note={note}
                 onUpdate={handleUpdate}
                 onDelete={handleDelete}
+                onToggleImportant={handleToggleImportant} // ⭐ PASS ONLY
               />
             </div>
           ))

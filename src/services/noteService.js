@@ -8,7 +8,7 @@ import {
   deleteDoc,
   doc,
   serverTimestamp,
-  orderBy,   // ✅ import orderBy
+  orderBy,
 } from "firebase/firestore";
 
 /**
@@ -18,11 +18,17 @@ import {
  * @param {string} content - note text
  * @param {string} bookTitle - title of the book
  */
-export const addNote = async (userId, bookId, content, bookTitle = "General") => {
+export const addNote = async (
+  userId,
+  bookId,
+  content,
+  bookTitle = "General"
+) => {
   await addDoc(collection(db, "users", userId, "notes"), {
     bookId,
     bookTitle,
     content,
+    important: false, // ⭐ NEW FIELD
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
@@ -30,27 +36,25 @@ export const addNote = async (userId, bookId, content, bookTitle = "General") =>
 
 /**
  * Get all notes for a user
- * @param {string} userId - current user UID
+ * Ordered by updatedAt (newest first)
  */
 export const getNotes = async (userId) => {
-  // ✅ order by createdAt newest first
   const q = query(
     collection(db, "users", userId, "notes"),
     orderBy("updatedAt", "desc")
   );
 
   const snapshot = await getDocs(q);
+
   return snapshot.docs.map((docSnap) => ({
     id: docSnap.id,
+    important: docSnap.data().important ?? false, // ✅ backward-safe
     ...docSnap.data(),
   }));
 };
 
 /**
- * Update a note
- * @param {string} userId - current user UID
- * @param {string} noteId - ID of the note
- * @param {string} content - new note text 
+ * Update note content
  */
 export const updateNote = async (userId, noteId, content) => {
   const noteRef = doc(db, "users", userId, "notes", noteId);
@@ -61,9 +65,18 @@ export const updateNote = async (userId, noteId, content) => {
 };
 
 /**
+ * Toggle Important ⭐
+ */
+export const toggleImportant = async (userId, noteId, currentValue) => {
+  const noteRef = doc(db, "users", userId, "notes", noteId);
+  await updateDoc(noteRef, {
+    important: !currentValue,
+    updatedAt: serverTimestamp(),
+  });
+};
+
+/**
  * Delete a note
- * @param {string} userId - current user UID
- * @param {string} noteId - ID of the note
  */
 export const deleteNote = async (userId, noteId) => {
   await deleteDoc(doc(db, "users", userId, "notes", noteId));
