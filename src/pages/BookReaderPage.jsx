@@ -51,13 +51,15 @@ function BookReaderPage() {
   }, [bookId]);
 
   // ----------------------------------
-  // 🔥 NEW: Track Reading History
+  // 🔥 Track Reading History
   // ----------------------------------
   useEffect(() => {
-    const trackReading = async () => {
-      if (!user || !bookId || !book) return;
+    if (!user || !bookId || !book) return;
 
+    const trackReading = async () => {
       try {
+        console.log("Writing readingHistory for:", user.uid, bookId);
+
         const historyId = `${user.uid}_${bookId}`;
         const historyRef = doc(db, "readingHistory", historyId);
 
@@ -71,7 +73,7 @@ function BookReaderPage() {
             lastReadAt: serverTimestamp(),
             status: "reading",
           },
-          { merge: true } // ✅ SAFE: never overwrites
+          { merge: true } // ✅ SAFE: never overwrites existing data
         );
       } catch (error) {
         console.error("Error tracking reading history:", error);
