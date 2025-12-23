@@ -102,13 +102,7 @@ export default function LoginPage() {
         {/* 🔵 Google Button */}
         <button
           onClick={handleGoogleLogin}
-          className="login-btn"
-          style={{
-            background: "#fff",
-            color: "#000",
-            border: "1px solid #ccc",
-            marginTop: "10px",
-          }}
+          className="google-login-btn"
         >
           Continue with Google
         </button>

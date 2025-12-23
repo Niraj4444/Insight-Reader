@@ -97,3 +97,20 @@
 .login-link a:hover {
   text-decoration: underline;
 }
+
+.google-login-btn {
+  margin-top: 12px;
+  width: 100%;
+  padding: 10px;
+  background-color: #db4437;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.google-login-btn:hover {
+  background-color: #c1351d;
+}
