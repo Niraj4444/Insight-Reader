@@ -1,3 +1,4 @@
+// src/pages/BookReaderPage.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { db } from "../firebase";
@@ -5,7 +6,6 @@ import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { useAuth } from "../context/AuthContext";
 import Recommendations from "../components/Recommendations";
 import NotesPanel from "../components/NotesPanel";
-import BookReviews from "../components/BookReviews"; // ✅ Reviews component
 
 function BookReaderPage() {
   const { bookId } = useParams();
@@ -95,14 +95,14 @@ function BookReaderPage() {
       <div style={{ flex: 3, display: "flex", flexDirection: "column" }}>
         <h2>📖 Reading: {book.title}</h2>
 
-        {/* ⭐ Average Rating (works even if rating = 0) */}
+        {/* ⭐ Average Rating */}
         {typeof book.avgRating === "number" && (
           <p style={{ fontWeight: "500" }}>
             ⭐ {book.avgRating} ({book.totalRatings || 0} reviews)
           </p>
         )}
 
-        {/* ⭐ Rate & Review */}
+        {/* ⭐ Rate & Review Button */}
         <button
           onClick={() => navigate(`/review/${bookId}`)}
           style={{
@@ -119,9 +119,6 @@ function BookReaderPage() {
         </button>
 
         {book.description && <p>{book.description}</p>}
-
-        {/* ⭐ Reviews (Visible to ALL users) */}
-        <BookReviews bookId={bookId} />
 
         {/* 📄 Book Preview */}
         <iframe
