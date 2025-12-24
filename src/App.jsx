@@ -20,7 +20,7 @@ import SearchResultsPage from "./pages/SearchResultsPage";
 import InsightDashboard from "./pages/InsightDashboard";
 import AllBooksPage from "./pages/AllBooksPage";
 
-// ✅ NEW IMPORT (ADD ONLY THIS)
+// ✅ NEW: ReviewPage
 import ReviewPage from "./pages/ReviewPage";
 
 // Homepage layout
@@ -59,11 +59,9 @@ export default function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/read/:bookId" element={<BookReaderPage />} />
-
-            {/* Existing */}
             <Route path="/all-books" element={<AllBooksPage />} />
 
-            {/* ✅ NEW REVIEW ROUTE (SAFE ADDITION) */}
+            {/* ✅ REVIEW PAGE ROUTE */}
             <Route
               path="/review/:bookId"
               element={

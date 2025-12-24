@@ -1,3 +1,4 @@
+// src/pages/ReviewPage.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { db } from "../firebase";
@@ -8,6 +9,8 @@ import {
   collection,
   getDocs,
   serverTimestamp,
+  query,
+  orderBy,
 } from "firebase/firestore";
 import { useAuth } from "../context/AuthContext";
 import RatingStars from "../components/RatingStars";
@@ -15,8 +18,6 @@ import RatingStars from "../components/RatingStars";
 function ReviewPage() {
   const { bookId } = useParams();
   const navigate = useNavigate();
-
-  // ✅ FIX HERE
   const { currentUser, loading: authLoading } = useAuth();
 
   const [book, setBook] = useState(null);
@@ -24,16 +25,14 @@ function ReviewPage() {
   const [reviewText, setReviewText] = useState("");
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [allReviews, setAllReviews] = useState([]);
 
-  // -------------------------
   // Fetch Book + Existing Review
-  // -------------------------
   useEffect(() => {
-    if (authLoading) return; // wait for auth
+    if (authLoading) return;
 
     const fetchData = async () => {
       try {
-        // 🔹 Fetch book
         const bookRef = doc(db, "books", bookId);
         const bookSnap = await getDoc(bookRef);
 
@@ -44,15 +43,25 @@ function ReviewPage() {
 
         setBook({ id: bookSnap.id, ...bookSnap.data() });
 
-        // 🔹 Fetch existing review (if any)
-        const reviewRef = doc(db, "books", bookId, "reviews", currentUser.uid);
-        const reviewSnap = await getDoc(reviewRef);
-
-        if (reviewSnap.exists()) {
-          const data = reviewSnap.data();
-          setRating(data.rating || 0);
-          setReviewText(data.reviewText || "");
+        if (currentUser) {
+          const reviewRef = doc(db, "books", bookId, "reviews", currentUser.uid);
+          const reviewSnap = await getDoc(reviewRef);
+          if (reviewSnap.exists()) {
+            const data = reviewSnap.data();
+            setRating(data.rating || 0);
+            setReviewText(data.reviewText || "");
+          }
         }
+
+        // Fetch all reviews
+        const reviewsQuery = query(
+          collection(db, "books", bookId, "reviews"),
+          orderBy("createdAt", "desc")
+        );
+        const reviewsSnap = await getDocs(reviewsQuery);
+        const reviewsData = [];
+        reviewsSnap.forEach((doc) => reviewsData.push(doc.data()));
+        setAllReviews(reviewsData);
       } catch (err) {
         console.error("Error loading review page:", err);
       } finally {
@@ -63,19 +72,16 @@ function ReviewPage() {
     fetchData();
   }, [authLoading, currentUser, bookId]);
 
-  // -------------------------
   // Submit Review
-  // -------------------------
   const handleSubmit = async () => {
+    if (!currentUser) return;
     if (rating === 0) {
       alert("Please select a rating");
       return;
     }
 
     setSubmitting(true);
-
     try {
-      // 🔹 Save review
       await setDoc(
         doc(db, "books", bookId, "reviews", currentUser.uid),
         {
@@ -88,18 +94,13 @@ function ReviewPage() {
         { merge: true }
       );
 
-      // 🔹 Recalculate average rating
-      const reviewsSnap = await getDocs(
-        collection(db, "books", bookId, "reviews")
-      );
-
+      // Recalculate average rating
+      const reviewsSnap = await getDocs(collection(db, "books", bookId, "reviews"));
       let total = 0;
       reviewsSnap.forEach((r) => {
         total += r.data().rating;
       });
-
       const avgRating = Number((total / reviewsSnap.size).toFixed(1));
-
       await setDoc(
         doc(db, "books", bookId),
         {
@@ -110,7 +111,7 @@ function ReviewPage() {
       );
 
       alert("Review submitted successfully!");
-      navigate(`/read/${bookId}`);
+      navigate(`/review/${bookId}`);
     } catch (err) {
       console.error("Error submitting review:", err);
       alert("Failed to submit review");
@@ -153,6 +154,26 @@ function ReviewPage() {
       >
         {submitting ? "Saving..." : "Submit Review"}
       </button>
+
+      {/* --- ALL REVIEWS SECTION --- */}
+      <div style={{ marginTop: "40px" }}>
+        <h3>All Reviews ({allReviews.length})</h3>
+        {allReviews.length === 0 && <p>No reviews yet. Be the first!</p>}
+        {allReviews.map((r, idx) => (
+          <div
+            key={idx}
+            style={{
+              border: "1px solid #ccc",
+              borderRadius: "6px",
+              padding: "10px",
+              marginTop: "10px",
+            }}
+          >
+            <strong>{r.userName}</strong> - <RatingStars rating={r.rating} size={20} />
+            <p>{r.reviewText}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

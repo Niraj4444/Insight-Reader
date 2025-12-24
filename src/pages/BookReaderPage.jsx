@@ -5,12 +5,11 @@ import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { useAuth } from "../context/AuthContext";
 import Recommendations from "../components/Recommendations";
 import NotesPanel from "../components/NotesPanel";
+import BookReviews from "../components/BookReviews"; // ✅ Reviews component
 
 function BookReaderPage() {
   const { bookId } = useParams();
   const navigate = useNavigate();
-
-  // ✅ FIX HERE
   const { currentUser } = useAuth();
 
   const [book, setBook] = useState(null);
@@ -62,7 +61,6 @@ function BookReaderPage() {
             userId: currentUser.uid,
             bookId,
             bookTitle: book.title,
-            startedAt: serverTimestamp(),
             lastReadAt: serverTimestamp(),
             status: "reading",
           },
@@ -95,9 +93,16 @@ function BookReaderPage() {
     <div style={{ height: "100vh", display: "flex", gap: "20px", padding: "20px" }}>
       {/* LEFT */}
       <div style={{ flex: 3, display: "flex", flexDirection: "column" }}>
-        <h2>Reading: {book.title}</h2>
+        <h2>📖 Reading: {book.title}</h2>
 
-        {/* ✅ RATE & REVIEW */}
+        {/* ⭐ Average Rating (works even if rating = 0) */}
+        {typeof book.avgRating === "number" && (
+          <p style={{ fontWeight: "500" }}>
+            ⭐ {book.avgRating} ({book.totalRatings || 0} reviews)
+          </p>
+        )}
+
+        {/* ⭐ Rate & Review */}
         <button
           onClick={() => navigate(`/review/${bookId}`)}
           style={{
@@ -115,12 +120,16 @@ function BookReaderPage() {
 
         {book.description && <p>{book.description}</p>}
 
+        {/* ⭐ Reviews (Visible to ALL users) */}
+        <BookReviews bookId={bookId} />
+
+        {/* 📄 Book Preview */}
         <iframe
           src={previewUrl}
           title={book.title}
           width="100%"
           height="100%"
-          style={{ border: "none", borderRadius: "10px", flex: 1 }}
+          style={{ border: "none", borderRadius: "10px", flex: 1, marginTop: "10px" }}
           allow="autoplay"
         />
       </div>
