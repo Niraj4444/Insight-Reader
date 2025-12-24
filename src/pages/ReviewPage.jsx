@@ -15,7 +15,9 @@ import RatingStars from "../components/RatingStars";
 function ReviewPage() {
   const { bookId } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+
+  // ✅ FIX HERE
+  const { currentUser, loading: authLoading } = useAuth();
 
   const [book, setBook] = useState(null);
   const [rating, setRating] = useState(0);
@@ -27,8 +29,11 @@ function ReviewPage() {
   // Fetch Book + Existing Review
   // -------------------------
   useEffect(() => {
+    if (authLoading) return; // wait for auth
+
     const fetchData = async () => {
       try {
+        // 🔹 Fetch book
         const bookRef = doc(db, "books", bookId);
         const bookSnap = await getDoc(bookRef);
 
@@ -39,19 +44,13 @@ function ReviewPage() {
 
         setBook({ id: bookSnap.id, ...bookSnap.data() });
 
-        // Check if user already reviewed
-        const reviewRef = doc(
-          db,
-          "books",
-          bookId,
-          "reviews",
-          user.uid
-        );
+        // 🔹 Fetch existing review (if any)
+        const reviewRef = doc(db, "books", bookId, "reviews", currentUser.uid);
         const reviewSnap = await getDoc(reviewRef);
 
         if (reviewSnap.exists()) {
           const data = reviewSnap.data();
-          setRating(data.rating);
+          setRating(data.rating || 0);
           setReviewText(data.reviewText || "");
         }
       } catch (err) {
@@ -61,8 +60,8 @@ function ReviewPage() {
       }
     };
 
-    if (user && bookId) fetchData();
-  }, [bookId, user]);
+    fetchData();
+  }, [authLoading, currentUser, bookId]);
 
   // -------------------------
   // Submit Review
@@ -76,50 +75,41 @@ function ReviewPage() {
     setSubmitting(true);
 
     try {
-      const reviewRef = doc(
-        db,
-        "books",
-        bookId,
-        "reviews",
-        user.uid
-      );
-
+      // 🔹 Save review
       await setDoc(
-        reviewRef,
+        doc(db, "books", bookId, "reviews", currentUser.uid),
         {
-          userId: user.uid,
-          userName: user.displayName || user.email,
+          userId: currentUser.uid,
+          userName: currentUser.displayName || currentUser.email,
           rating,
           reviewText,
           createdAt: serverTimestamp(),
         },
-        { merge: true } // ✅ update-safe
+        { merge: true }
       );
 
-      // 🔥 Recalculate average rating
+      // 🔹 Recalculate average rating
       const reviewsSnap = await getDocs(
         collection(db, "books", bookId, "reviews")
       );
 
       let total = 0;
-      reviewsSnap.forEach((doc) => {
-        total += doc.data().rating;
+      reviewsSnap.forEach((r) => {
+        total += r.data().rating;
       });
 
-      const avgRating = (
-        total / reviewsSnap.size
-      ).toFixed(1);
+      const avgRating = Number((total / reviewsSnap.size).toFixed(1));
 
       await setDoc(
         doc(db, "books", bookId),
         {
-          avgRating: Number(avgRating),
+          avgRating,
           totalRatings: reviewsSnap.size,
         },
-        { merge: true } // ✅ SAFE: does not touch other fields
+        { merge: true }
       );
 
-      alert("Review saved successfully!");
+      alert("Review submitted successfully!");
       navigate(`/read/${bookId}`);
     } catch (err) {
       console.error("Error submitting review:", err);
@@ -129,7 +119,7 @@ function ReviewPage() {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div>Loading review page...</div>;
   if (!book) return <div>Book not found.</div>;
 
   return (
@@ -146,11 +136,7 @@ function ReviewPage() {
         onChange={(e) => setReviewText(e.target.value)}
         placeholder="Write your review (optional)"
         rows={5}
-        style={{
-          width: "100%",
-          padding: "10px",
-          borderRadius: "6px",
-        }}
+        style={{ width: "100%", padding: "10px", borderRadius: "6px" }}
       />
 
       <button
@@ -159,8 +145,7 @@ function ReviewPage() {
         style={{
           marginTop: "20px",
           padding: "10px 20px",
-          backgroundColor: "#d32f2f",
-          color: "white",
+          backgroundColor: "#ff9800",
           border: "none",
           borderRadius: "6px",
           cursor: "pointer",

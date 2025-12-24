@@ -1,26 +1,23 @@
-// src/pages/BookReaderPage.jsx
-
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { db } from "../firebase";
-import {
-  doc,
-  getDoc,
-  setDoc,
-  serverTimestamp,
-} from "firebase/firestore";
+import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { useAuth } from "../context/AuthContext";
 import Recommendations from "../components/Recommendations";
 import NotesPanel from "../components/NotesPanel";
 
 function BookReaderPage() {
   const { bookId } = useParams();
-  const { user } = useAuth(); // ✅ logged-in user
+  const navigate = useNavigate();
+
+  // ✅ FIX HERE
+  const { currentUser } = useAuth();
+
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // -------------------------
-  // Fetch Book (UNCHANGED)
+  // Fetch Book
   // -------------------------
   useEffect(() => {
     const fetchBook = async () => {
@@ -29,7 +26,6 @@ function BookReaderPage() {
         return;
       }
 
-      setLoading(true);
       try {
         const ref = doc(db, "books", bookId);
         const snap = await getDoc(ref);
@@ -37,7 +33,6 @@ function BookReaderPage() {
         if (snap.exists()) {
           setBook({ id: snap.id, ...snap.data() });
         } else {
-          console.error("No such book in Firestore!");
           setBook(null);
         }
       } catch (err) {
@@ -50,30 +45,28 @@ function BookReaderPage() {
     fetchBook();
   }, [bookId]);
 
-  // ----------------------------------
-  // 🔥 Track Reading History
-  // ----------------------------------
+  // -------------------------
+  // Track Reading History
+  // -------------------------
   useEffect(() => {
-    if (!user || !bookId || !book) return;
+    if (!currentUser || !bookId || !book) return;
 
     const trackReading = async () => {
       try {
-        console.log("Writing readingHistory for:", user.uid, bookId);
-
-        const historyId = `${user.uid}_${bookId}`;
+        const historyId = `${currentUser.uid}_${bookId}`;
         const historyRef = doc(db, "readingHistory", historyId);
 
         await setDoc(
           historyRef,
           {
-            userId: user.uid,
-            bookId: bookId,
+            userId: currentUser.uid,
+            bookId,
             bookTitle: book.title,
             startedAt: serverTimestamp(),
             lastReadAt: serverTimestamp(),
             status: "reading",
           },
-          { merge: true } // ✅ SAFE: never overwrites existing data
+          { merge: true }
         );
       } catch (error) {
         console.error("Error tracking reading history:", error);
@@ -81,54 +74,46 @@ function BookReaderPage() {
     };
 
     trackReading();
-  }, [user, bookId, book]);
+  }, [currentUser, bookId, book]);
 
   if (loading) return <div>Loading book...</div>;
   if (!book) return <div>Book not found.</div>;
 
-  // --- Google Drive URL Fix (UNCHANGED) ---
+  // -------------------------
+  // Google Drive Preview Fix
+  // -------------------------
   let previewUrl = book.bookFileURL;
-  let downloadUrl = book.bookFileURL;
 
   if (book.bookFileURL?.includes("drive.google.com")) {
     const match = book.bookFileURL.match(/\/d\/(.*?)(\/|$|\?)/);
-
     if (match && match[1]) {
-      const fileId = match[1];
-      previewUrl = `https://drive.google.com/file/d/${fileId}/preview?hl=en`;
-      downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+      previewUrl = `https://drive.google.com/file/d/${match[1]}/preview`;
     }
   }
-  // --- END ---
 
   return (
-    <div
-      style={{
-        height: "100vh",
-        display: "flex",
-        flexDirection: "row",
-        gap: "20px",
-        padding: "20px",
-      }}
-    >
-      {/* LEFT: Book Info + Preview */}
-      <div
-        style={{
-          flex: 3,
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <h2 style={{ marginBottom: "10px" }}>
-          Reading: {book.title}
-        </h2>
+    <div style={{ height: "100vh", display: "flex", gap: "20px", padding: "20px" }}>
+      {/* LEFT */}
+      <div style={{ flex: 3, display: "flex", flexDirection: "column" }}>
+        <h2>Reading: {book.title}</h2>
 
-        {book.description && (
-          <p className="book-description">
-            {book.description}
-          </p>
-        )}
+        {/* ✅ RATE & REVIEW */}
+        <button
+          onClick={() => navigate(`/review/${bookId}`)}
+          style={{
+            marginBottom: "12px",
+            padding: "6px 14px",
+            backgroundColor: "#ffb300",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+            width: "fit-content",
+          }}
+        >
+          ⭐ Rate & Review
+        </button>
+
+        {book.description && <p>{book.description}</p>}
 
         <iframe
           src={previewUrl}
@@ -140,16 +125,8 @@ function BookReaderPage() {
         />
       </div>
 
-      {/* RIGHT: Notes + Recommendations */}
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          gap: "20px",
-          overflowY: "auto",
-        }}
-      >
+      {/* RIGHT */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "20px" }}>
         <NotesPanel bookId={bookId} bookTitle={book.title} />
         <Recommendations currentBook={book} />
       </div>

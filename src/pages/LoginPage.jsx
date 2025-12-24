@@ -1,5 +1,5 @@
 // src/pages/LoginPage.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"; // ✅ Added useEffect
 import { useNavigate, Link } from "react-router-dom";
 import {
   signInWithEmailAndPassword,
@@ -7,6 +7,7 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { auth, googleProvider } from "../firebase";
+import { useAuth } from "../context/AuthContext"; // ✅ Added
 import "./LoginPage.css";
 
 export default function LoginPage() {
@@ -16,6 +17,14 @@ export default function LoginPage() {
   const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
+  const { user, loading } = useAuth(); // ✅ Added
+
+  // 🔁 Redirect if user already logged in
+  useEffect(() => {
+    if (!loading && user) {
+      navigate("/"); // or any page you want logged-in users to go
+    }
+  }, [user, loading, navigate]);
 
   // 🔐 Email/password login
   const handleLogin = async (e) => {
@@ -61,6 +70,8 @@ export default function LoginPage() {
       setError(err.message);
     }
   };
+
+  if (loading) return <div>Loading...</div>; // ✅ Added: wait for auth to load
 
   return (
     <div className="login-page-container">
