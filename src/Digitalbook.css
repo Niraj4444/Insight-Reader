@@ -746,3 +746,23 @@ textarea.form-input {
   font-size: 0.9rem;
   color: var(--muted-text-color);
 }
+
+.auth-reminder {
+  background: linear-gradient(135deg, #f8f9fc, #eef1ff);
+  border-left: 5px solid;
+  padding: 18px 22px;
+  border-radius: 10px;
+  margin-bottom: 26px;
+}
+
+.auth-reminder h3 {
+  margin: 0 0 6px;
+  font-size: 1.1rem;
+  color: #1f2937;
+}
+
+.auth-reminder p {
+  margin: 0;
+  color: #4b5563;
+  font-size: 0.95rem;
+}

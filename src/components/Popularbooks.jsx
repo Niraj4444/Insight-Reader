@@ -1,4 +1,3 @@
-// src/components/Popularbooks.jsx
 import React, { useState, useEffect } from "react";
 import { db } from "../firebase";
 import { collection, getDocs } from "firebase/firestore";
@@ -22,8 +21,8 @@ function Popularbooks() {
         const querySnapshot = await getDocs(booksCollectionRef);
         const booksList = querySnapshot.docs.map((doc) => ({
           id: doc.id,
-          popular: false, // default if missing
-          category: "Uncategorized", // default category
+          popular: false,
+          category: "Uncategorized",
           ...doc.data(),
         }));
         setBooks(booksList);
@@ -59,18 +58,31 @@ function Popularbooks() {
     return <div className="section">Loading books...</div>;
   }
 
-  // ✅ Filter only popular books and by selected category
   const filteredBooks = books.filter(
     (book) =>
       book.popular &&
       (selectedCategory === "All" || book.category === selectedCategory)
   );
 
-  // ✅ Extract unique categories
-  const categories = ["All", ...new Set(books.map((b) => b.category || "Uncategorized"))];
+  const categories = [
+    "All",
+    ...new Set(books.map((b) => b.category || "Uncategorized")),
+  ];
 
   return (
     <>
+      {/* ✅ Guest-only reminder (TEXT ONLY, no buttons) */}
+      {!currentUser && (
+        <div className="auth-reminder">
+          <h3>🔐 Unlock more features</h3>
+          <p>
+            Sign Up or Login to access Insight Dashboard, save bookmarks,
+            and track your reading progress.
+          </p>
+        </div>
+      )}
+
+      {/* 🔽 EXISTING CONTENT */}
       <div className="section section-margin-top">
         <h3>Popular Books</h3>
         <p>Explore a curated collection of the world's most popular books.</p>
@@ -99,6 +111,8 @@ function Popularbooks() {
                 </span>
               </div>
             </Link>
+
+            {/* ✅ Bookmark still works exactly the same */}
             {currentUser && (
               <button
                 className="btn btn-primary"
