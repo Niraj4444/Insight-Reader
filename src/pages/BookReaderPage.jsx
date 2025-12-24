@@ -7,6 +7,13 @@ import { useAuth } from "../context/AuthContext";
 import Recommendations from "../components/Recommendations";
 import NotesPanel from "../components/NotesPanel";
 
+// Helper: Convert Nepali numerals to English
+const nepaliToEnglishNumber = (text) => {
+  if (!text) return "";
+  const nepaliNums = ["०","१","२","३","४","५","६","७","८","९"];
+  return text.replace(/[०-९]/g, (d) => nepaliNums.indexOf(d));
+};
+
 function BookReaderPage() {
   const { bookId } = useParams();
   const navigate = useNavigate();
@@ -90,9 +97,16 @@ function BookReaderPage() {
   }
 
   return (
-    <div style={{ height: "100vh", display: "flex", gap: "20px", padding: "20px" }}>
-      {/* LEFT */}
-      <div style={{ flex: 3, display: "flex", flexDirection: "column" }}>
+    <div
+      style={{
+        height: "120vh", // increased screen length
+        display: "flex",
+        gap: "20px",
+        padding: "20px",
+      }}
+    >
+      {/* LEFT: Book Info + Preview */}
+      <div style={{ flex: 3, display: "flex", flexDirection: "column", height: "100%" }}>
         <h2>📖 Reading: {book.title}</h2>
 
         {/* ⭐ Average Rating */}
@@ -120,7 +134,7 @@ function BookReaderPage() {
 
         {book.description && <p>{book.description}</p>}
 
-        {/* 📄 Book Preview */}
+        {/* PDF Preview */}
         <iframe
           src={previewUrl}
           title={book.title}
@@ -131,8 +145,8 @@ function BookReaderPage() {
         />
       </div>
 
-      {/* RIGHT */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "20px" }}>
+      {/* RIGHT: Notes + Recommendations */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "20px", overflowY: "auto" }}>
         <NotesPanel bookId={bookId} bookTitle={book.title} />
         <Recommendations currentBook={book} />
       </div>
