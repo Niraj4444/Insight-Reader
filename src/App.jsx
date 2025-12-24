@@ -18,9 +18,10 @@ import { AuthProvider } from "./context/AuthContext";
 import BookReaderPage from "./pages/BookReaderPage";
 import SearchResultsPage from "./pages/SearchResultsPage";
 import InsightDashboard from "./pages/InsightDashboard";
+import AllBooksPage from "./pages/AllBooksPage";
 
-// ✅ NEW IMPORT
-import AllBooksPage from "./pages/AllBooksPage"; // <-- new page we'll add
+// ✅ NEW IMPORT (ADD ONLY THIS)
+import ReviewPage from "./pages/ReviewPage";
 
 // Homepage layout
 function HomePage() {
@@ -28,7 +29,6 @@ function HomePage() {
     <>
       <Header />
       <div className="main-content">
-        {/* ✅ Only Popular Books on homepage now */}
         <Popularbooks />
       </div>
     </>
@@ -60,8 +60,18 @@ export default function App() {
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/read/:bookId" element={<BookReaderPage />} />
 
-            {/* ✅ New All Books route */}
+            {/* Existing */}
             <Route path="/all-books" element={<AllBooksPage />} />
+
+            {/* ✅ NEW REVIEW ROUTE (SAFE ADDITION) */}
+            <Route
+              path="/review/:bookId"
+              element={
+                <ProtectedRoute>
+                  <ReviewPage />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Protected routes */}
             <Route
