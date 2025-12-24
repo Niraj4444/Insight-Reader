@@ -7,7 +7,7 @@ import { useAuth } from "../context/AuthContext";
 import Recommendations from "../components/Recommendations";
 import NotesPanel from "../components/NotesPanel";
 
-// Helper: Convert Nepali numerals to English
+// Helper: Convert Nepali numerals to English (not used for iframe, kept untouched)
 const nepaliToEnglishNumber = (text) => {
   if (!text) return "";
   const nepaliNums = ["०","१","२","३","४","५","६","७","८","९"];
@@ -85,21 +85,21 @@ function BookReaderPage() {
   if (!book) return <div>Book not found.</div>;
 
   // -------------------------
-  // Google Drive Preview Fix
+  // Google Drive Preview FIX (English page numbers)
   // -------------------------
   let previewUrl = book.bookFileURL;
 
   if (book.bookFileURL?.includes("drive.google.com")) {
     const match = book.bookFileURL.match(/\/d\/(.*?)(\/|$|\?)/);
     if (match && match[1]) {
-      previewUrl = `https://drive.google.com/file/d/${match[1]}/preview`;
+      previewUrl = `https://drive.google.com/file/d/${match[1]}/preview?hl=en&embedded=true`;
     }
   }
 
   return (
     <div
       style={{
-        height: "120vh", // increased screen length
+        height: "120vh",
         display: "flex",
         gap: "20px",
         padding: "20px",
@@ -109,14 +109,12 @@ function BookReaderPage() {
       <div style={{ flex: 3, display: "flex", flexDirection: "column", height: "100%" }}>
         <h2>📖 Reading: {book.title}</h2>
 
-        {/* ⭐ Average Rating */}
         {typeof book.avgRating === "number" && (
           <p style={{ fontWeight: "500" }}>
             ⭐ {book.avgRating} ({book.totalRatings || 0} reviews)
           </p>
         )}
 
-        {/* ⭐ Rate & Review Button */}
         <button
           onClick={() => navigate(`/review/${bookId}`)}
           style={{
@@ -134,7 +132,6 @@ function BookReaderPage() {
 
         {book.description && <p>{book.description}</p>}
 
-        {/* PDF Preview */}
         <iframe
           src={previewUrl}
           title={book.title}
