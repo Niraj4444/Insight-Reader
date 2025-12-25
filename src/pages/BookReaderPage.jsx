@@ -22,7 +22,7 @@ function BookReaderPage() {
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 🔹 NEW: Page-based reading progress state
+  // 🔹 Page-based reading progress state (strings)
   const [currentPage, setCurrentPage] = useState("");
   const [totalPages, setTotalPages] = useState("");
 
@@ -86,7 +86,7 @@ function BookReaderPage() {
   }, [currentUser, bookId, book]);
 
   // -------------------------
-  // 🔹 NEW: Load saved page progress
+  // Load saved page progress
   // -------------------------
   useEffect(() => {
     if (!currentUser || !bookId) return;
@@ -104,8 +104,8 @@ function BookReaderPage() {
         const snap = await getDoc(ref);
         if (snap.exists()) {
           const data = snap.data();
-          setCurrentPage(data.currentPage ?? "");
-          setTotalPages(data.totalPages ?? "");
+          setCurrentPage(data.currentPage?.toString() ?? "");
+          setTotalPages(data.totalPages?.toString() ?? "");
         }
       } catch (err) {
         console.error("Error loading reading progress:", err);
@@ -116,10 +116,15 @@ function BookReaderPage() {
   }, [currentUser, bookId]);
 
   // -------------------------
-  // 🔹 NEW: Save page-based progress
+  // Save page-based progress
   // -------------------------
-  const savePageProgress = async (page, total) => {
-    if (!currentUser || !bookId || !total) return;
+  const savePageProgress = async (pageStr, totalStr) => {
+    if (!currentUser || !bookId) return;
+    if (!pageStr || !totalStr) return;
+
+    const page = Number(pageStr);
+    const total = Number(totalStr);
+    if (isNaN(page) || isNaN(total)) return;
 
     const safePage = Math.max(0, Math.min(page, total));
     const progressPercent = Math.round((safePage / total) * 100);
@@ -166,7 +171,7 @@ function BookReaderPage() {
   }
 
   const percentage =
-    totalPages > 0
+    currentPage && totalPages
       ? Math.round((Number(currentPage) / Number(totalPages)) * 100)
       : 0;
 
@@ -206,7 +211,7 @@ function BookReaderPage() {
 
         {book.description && <p>{book.description}</p>}
 
-        {/* 🔹 NEW: Page-based Reading Progress UI */}
+        {/* 🔹 Page-based Reading Progress UI */}
         <div
           style={{
             background: "#f5f5f5",
@@ -224,9 +229,9 @@ function BookReaderPage() {
               placeholder="Current page"
               value={currentPage}
               onChange={(e) => {
-                const value = Number(e.target.value);
+                const value = e.target.value; // keep string
                 setCurrentPage(value);
-                savePageProgress(value, totalPages);
+                if (value && totalPages) savePageProgress(value, totalPages);
               }}
             />
 
@@ -236,14 +241,14 @@ function BookReaderPage() {
               placeholder="Total pages"
               value={totalPages}
               onChange={(e) => {
-                const value = Number(e.target.value);
+                const value = e.target.value; // keep string
                 setTotalPages(value);
-                savePageProgress(currentPage, value);
+                if (currentPage && value) savePageProgress(currentPage, value);
               }}
             />
           </div>
 
-          {totalPages > 0 && (
+          {totalPages && (
             <p style={{ marginTop: "6px" }}>
               📊 {percentage}% completed ({currentPage}/{totalPages})
             </p>
