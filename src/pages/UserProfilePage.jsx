@@ -10,6 +10,11 @@ export default function UserProfilePage() {
   // Use profile image if available, otherwise default logo
   const profileImage = currentUser?.photoURL || "/user.jpg";
 
+  // Get member since year from Firebase Auth
+  const memberSince = currentUser?.metadata?.creationTime
+    ? new Date(currentUser.metadata.creationTime).getFullYear()
+    : "—";
+
   return (
     <div className="profile-page">
       <div className="profile-card">
@@ -30,7 +35,7 @@ export default function UserProfilePage() {
             <span>Email:</span> {currentUser?.email}
           </p>
           <p>
-            <span>Member Since:</span> 2025
+            <span>Member Since:</span> {memberSince}
           </p>
         </div>
 
