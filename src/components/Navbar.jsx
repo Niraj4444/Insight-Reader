@@ -42,11 +42,16 @@ export default function Navbar() {
             <Link to="/bookmark" className="nav-link">
               Bookmark
             </Link>
+
+            {/* ✅ New Reading History Link */}
+            <Link to="/history" className="nav-link">
+              Reading History
+            </Link>
+
             <Link to="/insight-dashboard" className="nav-link">
               Insight Dashboard
             </Link>
 
-            {/* ✅ Added All Books Link (visible to logged-in users) */}
             <Link to="/all-books" className="nav-link">
               All Books
             </Link>
@@ -60,7 +65,6 @@ export default function Navbar() {
           </>
         ) : (
           <>
-            {/* ✅ Added All Books Link (visible even before login) */}
             <Link to="/all-books" className="nav-link">
               All Books
             </Link>

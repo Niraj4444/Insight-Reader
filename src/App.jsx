@@ -20,8 +20,9 @@ import SearchResultsPage from "./pages/SearchResultsPage";
 import InsightDashboard from "./pages/InsightDashboard";
 import AllBooksPage from "./pages/AllBooksPage";
 
-// ✅ NEW: ReviewPage
+// ✅ NEW: ReviewPage & ReadingHistoryPage
 import ReviewPage from "./pages/ReviewPage";
+import ReadingHistoryPage from "./pages/ReadingHistoryPage";
 
 // Homepage layout
 function HomePage() {
@@ -93,6 +94,16 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <UserProfilePage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* ✅ NEW: Reading History Route */}
+            <Route
+              path="/history"
+              element={
+                <ProtectedRoute>
+                  <ReadingHistoryPage />
                 </ProtectedRoute>
               }
             />
