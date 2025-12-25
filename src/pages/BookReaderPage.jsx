@@ -22,6 +22,10 @@ function BookReaderPage() {
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // 🔹 NEW: Page-based reading progress state
+  const [currentPage, setCurrentPage] = useState("");
+  const [totalPages, setTotalPages] = useState("");
+
   // -------------------------
   // Fetch Book
   // -------------------------
@@ -52,7 +56,7 @@ function BookReaderPage() {
   }, [bookId]);
 
   // -------------------------
-  // Track Reading History
+  // Track Reading History (UNCHANGED)
   // -------------------------
   useEffect(() => {
     if (!currentUser || !bookId || !book) return;
@@ -81,11 +85,76 @@ function BookReaderPage() {
     trackReading();
   }, [currentUser, bookId, book]);
 
+  // -------------------------
+  // 🔹 NEW: Load saved page progress
+  // -------------------------
+  useEffect(() => {
+    if (!currentUser || !bookId) return;
+
+    const loadProgress = async () => {
+      try {
+        const ref = doc(
+          db,
+          "users",
+          currentUser.uid,
+          "readingProgress",
+          bookId
+        );
+
+        const snap = await getDoc(ref);
+        if (snap.exists()) {
+          const data = snap.data();
+          setCurrentPage(data.currentPage ?? "");
+          setTotalPages(data.totalPages ?? "");
+        }
+      } catch (err) {
+        console.error("Error loading reading progress:", err);
+      }
+    };
+
+    loadProgress();
+  }, [currentUser, bookId]);
+
+  // -------------------------
+  // 🔹 NEW: Save page-based progress
+  // -------------------------
+  const savePageProgress = async (page, total) => {
+    if (!currentUser || !bookId || !total) return;
+
+    const safePage = Math.max(0, Math.min(page, total));
+    const progressPercent = Math.round((safePage / total) * 100);
+
+    try {
+      const ref = doc(
+        db,
+        "users",
+        currentUser.uid,
+        "readingProgress",
+        bookId
+      );
+
+      await setDoc(
+        ref,
+        {
+          bookId,
+          currentPage: safePage,
+          totalPages: total,
+          progress: progressPercent,
+          status: safePage >= total ? "completed" : "reading",
+          lastUpdated: serverTimestamp(),
+        },
+        { merge: true }
+      );
+    } catch (err) {
+      console.error("Error saving page progress:", err);
+    }
+  };
+
   if (loading) return <div>Loading book...</div>;
   if (!book) return <div>Book not found.</div>;
 
   // -------------------------
-  // Google Drive Preview FIX (English page numbers)
+  // Google Drive Preview FIX (UNCHANGED)
   // -------------------------
   let previewUrl = book.bookFileURL;
 
@@ -95,6 +164,11 @@ function BookReaderPage() {
       previewUrl = `https://drive.google.com/file/d/${match[1]}/preview?hl=en&embedded=true`;
     }
   }
+
+  const percentage =
+    totalPages > 0
+      ? Math.round((Number(currentPage) / Number(totalPages)) * 100)
+      : 0;
 
   return (
     <div
@@ -132,17 +206,61 @@ function BookReaderPage() {
 
         {book.description && <p>{book.description}</p>}
 
+        {/* 🔹 NEW: Page-based Reading Progress UI */}
+        <div
+          style={{
+            background: "#f5f5f5",
+            padding: "10px",
+            borderRadius: "8px",
+            marginBottom: "10px",
+          }}
+        >
+          <strong>Reading Progress</strong>
+
+          <div style={{ display: "flex", gap: "10px", marginTop: "6px" }}>
+            <input
+              type="number"
+              min="0"
+              placeholder="Current page"
+              value={currentPage}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+                setCurrentPage(value);
+                savePageProgress(value, totalPages);
+              }}
+            />
+
+            <input
+              type="number"
+              min="1"
+              placeholder="Total pages"
+              value={totalPages}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+                setTotalPages(value);
+                savePageProgress(currentPage, value);
+              }}
+            />
+          </div>
+
+          {totalPages > 0 && (
+            <p style={{ marginTop: "6px" }}>
+              📊 {percentage}% completed ({currentPage}/{totalPages})
+            </p>
+          )}
+        </div>
+
         <iframe
           src={previewUrl}
           title={book.title}
           width="100%"
           height="100%"
-          style={{ border: "none", borderRadius: "10px", flex: 1, marginTop: "10px" }}
+          style={{ border: "none", borderRadius: "10px", flex: 1 }}
           allow="autoplay"
         />
       </div>
 
-      {/* RIGHT: Notes + Recommendations */}
+      {/* RIGHT: Notes + Recommendations (UNCHANGED) */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "20px", overflowY: "auto" }}>
         <NotesPanel bookId={bookId} bookTitle={book.title} />
         <Recommendations currentBook={book} />
