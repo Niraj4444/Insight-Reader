@@ -29,7 +29,7 @@ export default function ReadingHistoryPage() {
             id: docSnap.id,
             ...progressData,
             bookTitle: bookData.title || progressData.bookTitle,
-            bookImage: bookData.imageURL || '', // Replace 'imageURL' with your field name
+            bookImage: bookData.coverImageURL || '/images/placeholder.jpg', // fallback
           };
         }));
 
@@ -65,13 +65,11 @@ export default function ReadingHistoryPage() {
               alignItems: 'center'
             }}
           >
-            {item.bookImage && (
-              <img
-                src={item.bookImage}
-                alt={item.bookTitle}
-                style={{ width: '50px', height: '70px', objectFit: 'cover', borderRadius: '4px' }}
-              />
-            )}
+            <img
+              src={item.bookImage}
+              alt={item.bookTitle}
+              style={{ width: '50px', height: '70px', objectFit: 'cover', borderRadius: '4px' }}
+            />
             <div>
               <Link to={`/read/${item.bookId}`} style={{ fontWeight: 'bold', fontSize: '16px' }}>
                 {item.bookTitle}
