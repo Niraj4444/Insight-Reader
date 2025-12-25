@@ -7,7 +7,7 @@ import { useAuth } from "../context/AuthContext";
 import Recommendations from "../components/Recommendations";
 import NotesPanel from "../components/NotesPanel";
 
-// Helper: Convert Nepali numerals to English (not used for iframe, kept untouched)
+// Helper: Convert Nepali numerals to English (unchanged)
 const nepaliToEnglishNumber = (text) => {
   if (!text) return "";
   const nepaliNums = ["०","१","२","३","४","५","६","७","८","९"];
@@ -22,13 +22,9 @@ function BookReaderPage() {
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 🔹 Page-based reading progress state (strings)
   const [currentPage, setCurrentPage] = useState("");
   const [totalPages, setTotalPages] = useState("");
 
-  // -------------------------
-  // Fetch Book
-  // -------------------------
   useEffect(() => {
     const fetchBook = async () => {
       if (!bookId) {
@@ -55,9 +51,6 @@ function BookReaderPage() {
     fetchBook();
   }, [bookId]);
 
-  // -------------------------
-  // Track Reading History (UNCHANGED)
-  // -------------------------
   useEffect(() => {
     if (!currentUser || !bookId || !book) return;
 
@@ -85,9 +78,6 @@ function BookReaderPage() {
     trackReading();
   }, [currentUser, bookId, book]);
 
-  // -------------------------
-  // Load saved page progress
-  // -------------------------
   useEffect(() => {
     if (!currentUser || !bookId) return;
 
@@ -115,9 +105,6 @@ function BookReaderPage() {
     loadProgress();
   }, [currentUser, bookId]);
 
-  // -------------------------
-  // Save page-based progress
-  // -------------------------
   const savePageProgress = async (pageStr, totalStr) => {
     if (!currentUser || !bookId) return;
     if (!pageStr || !totalStr) return;
@@ -158,9 +145,6 @@ function BookReaderPage() {
   if (loading) return <div>Loading book...</div>;
   if (!book) return <div>Book not found.</div>;
 
-  // -------------------------
-  // Google Drive Preview FIX (UNCHANGED)
-  // -------------------------
   let previewUrl = book.bookFileURL;
 
   if (book.bookFileURL?.includes("drive.google.com")) {
@@ -176,15 +160,7 @@ function BookReaderPage() {
       : 0;
 
   return (
-    <div
-      style={{
-        height: "120vh",
-        display: "flex",
-        gap: "20px",
-        padding: "20px",
-      }}
-    >
-      {/* LEFT: Book Info + Preview */}
+    <div style={{ height: "120vh", display: "flex", gap: "20px", padding: "20px" }}>
       <div style={{ flex: 3, display: "flex", flexDirection: "column", height: "100%" }}>
         <h2>📖 Reading: {book.title}</h2>
 
@@ -211,7 +187,7 @@ function BookReaderPage() {
 
         {book.description && <p>{book.description}</p>}
 
-        {/* 🔹 Page-based Reading Progress UI */}
+        {/* 🔹 FIXED Reading Progress colors */}
         <div
           style={{
             background: "#f5f5f5",
@@ -220,7 +196,9 @@ function BookReaderPage() {
             marginBottom: "10px",
           }}
         >
-          <strong>Reading Progress</strong>
+          <strong style={{ color: "#b91c1c" }}>
+            Reading Progress
+          </strong>
 
           <div style={{ display: "flex", gap: "10px", marginTop: "6px" }}>
             <input
@@ -229,7 +207,7 @@ function BookReaderPage() {
               placeholder="Current page"
               value={currentPage}
               onChange={(e) => {
-                const value = e.target.value; // keep string
+                const value = e.target.value;
                 setCurrentPage(value);
                 if (value && totalPages) savePageProgress(value, totalPages);
               }}
@@ -241,7 +219,7 @@ function BookReaderPage() {
               placeholder="Total pages"
               value={totalPages}
               onChange={(e) => {
-                const value = e.target.value; // keep string
+                const value = e.target.value;
                 setTotalPages(value);
                 if (currentPage && value) savePageProgress(currentPage, value);
               }}
@@ -249,7 +227,7 @@ function BookReaderPage() {
           </div>
 
           {totalPages && (
-            <p style={{ marginTop: "6px" }}>
+            <p style={{ marginTop: "6px", color: "#b91c1c" }}>
               📊 {percentage}% completed ({currentPage}/{totalPages})
             </p>
           )}
@@ -265,7 +243,6 @@ function BookReaderPage() {
         />
       </div>
 
-      {/* RIGHT: Notes + Recommendations (UNCHANGED) */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "20px", overflowY: "auto" }}>
         <NotesPanel bookId={bookId} bookTitle={book.title} />
         <Recommendations currentBook={book} />
