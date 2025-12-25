@@ -32,9 +32,6 @@ export default function UserProfilePage() {
           <p>
             <span>Member Since:</span> 2025
           </p>
-          <p>
-            <span>Books Read:</span> 0 (coming soon)
-          </p>
         </div>
 
         {/* Buttons */}
