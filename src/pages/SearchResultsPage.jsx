@@ -38,7 +38,6 @@ function SearchResultsPage() {
 
   const normalize = (str) => (str || "").toLowerCase().trim();
 
-  // ✅ Search directly in Firestore books
   const results = firestoreBooks.filter((b) =>
     [b.title, b.author, b.description, b.category, b.meta]
       .map(normalize)
@@ -71,8 +70,9 @@ function SearchResultsPage() {
   return (
     <div className="section">
       <h2>Search Results for "{query}"</h2>
+
       {results.length > 0 ? (
-        <div className="grid">
+        <div className="search-grid">
           {results.map((book) => (
             <div className="grid-half grid-column" key={book.id}>
               <div className="card">

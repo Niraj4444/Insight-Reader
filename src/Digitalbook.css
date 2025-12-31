@@ -766,3 +766,20 @@ textarea.form-input {
   color: #4b5563;
   font-size: 0.95rem;
 }
+
+/* ============================================= */
+/* 🔍 SEARCH RESULTS – FIXED BOOK SIZE GRID */
+/* ============================================= */
+
+.search-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1.2rem;
+  align-items: start;
+}
+
+/* Prevent grid children from stretching */
+.search-grid .grid-column,
+.search-grid .grid-half {
+  width: auto !important;
+}
